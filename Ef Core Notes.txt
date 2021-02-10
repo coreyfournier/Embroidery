@@ -1,0 +1,7 @@
+Add-Migration InitialCreate
+update-database
+
+Install the extension
+Go to Tools, then Sql Lite
+Specify the path to the database.
+https://github.com/ErikEJ/SqlCeToolbox/wiki

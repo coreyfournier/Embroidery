@@ -1,0 +1,3 @@
+https://imagemagick.org/script/download.php#windows
+
+Install: "Win64 dynamic at 16 bits-per-pixel component"
