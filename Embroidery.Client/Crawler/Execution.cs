@@ -1,7 +1,9 @@
 ﻿using Embroidery.Client.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,65 +28,100 @@ namespace Embroidery.Client.Crawler
             using (var db = new DataContext())
             {
                 Dictionary<string,int> tagNameLookup = new Dictionary<string, int>();
-
+                
                 foreach (var item in db.Tags.Select(x => new { x.Id, x.Name }))
                     tagNameLookup.Add(item.Name, item.Id);
 
                 Refresh(pathToSearch, (newFile) =>
                 {
-                    var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
+                    var fileName = System.IO.Path.GetFileName(newFile);
+                    var filePath = System.IO.Path.GetFullPath(newFile);
 
-                    PesToJpg(newFile, tempFile);
 
-                    System.Diagnostics.Debug.WriteLine(newFile);
-                    var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(newFile));
-                    List<Tag> fileTags = new List<Tag>();
-
-                    //Add any new tags, and then add them to the lookup table
-                    foreach (var tag in foundTags)
-                    {
-                        if (!tagNameLookup.ContainsKey(tag))
-                        {
-                            var newTag = new Tag() { 
-                                 CreatedDate = DateTime.Now,
-                                  Name = tag,
-                                  //Nullable doesn't work
-                                  UpdatedDate = DateTime.MinValue
-                            };
-                            db.Tags.Add(newTag);
-                            db.SaveChanges();
-                            tagNameLookup.Add(tag, newTag.Id);
-                        }
+                    if (db.Files.Any(x => x.Name == fileName && x.Path == filePath))
+                    { 
+                        //Anything to update?
                     }
-
-                    db.Files.Add(new Models.File()
+                    else
                     {
-                        CreatedDate = DateTime.Now,
-                        ImageThumbnail = System.IO.File.ReadAllBytes(tempFile),
-                        Name = System.IO.Path.GetFileName(newFile),
-                        Path = System.IO.Path.GetFullPath(newFile),
-                        SizeInKb = (int)((decimal)(new System.IO.FileInfo(newFile).Length) / 1024M),
-                        //Nullable doesn't work for some reason
-                        UpdatedDate = DateTime.MinValue                              
-                    });
+                        var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
+                        string fileHash;
+                        List<Tag> fileTags = new List<Tag>();
 
-                    System.IO.File.Delete(tempFile);
+                        System.Diagnostics.Debug.WriteLine($"Working on {newFile}");
 
-                    db.SaveChanges();
+                        PesToJpg(newFile, tempFile);
+
+                        using (var fileStream = new System.IO.FileStream(newFile, FileMode.Open))
+                        {
+                            fileHash = GetChecksumBuffered(fileStream);
+                        }
+
+                        var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(newFile));
+
+                        //Add any new tags, and then add them to the lookup table
+                        foreach (var tag in foundTags)
+                        {
+                            if (!tagNameLookup.ContainsKey(tag))
+                            {
+                                var newTag = new Tag()
+                                {
+                                    CreatedDate = DateTime.Now,
+                                    Name = tag,
+                                    //Nullable doesn't work
+                                    UpdatedDate = DateTime.MinValue
+                                };
+                                db.Tags.Add(newTag);
+                                db.SaveChanges();
+                                tagNameLookup.Add(tag, newTag.Id);
+                            }
+                        }
+
+                        db.Files.Add(new Models.File()
+                        {
+                            CreatedDate = DateTime.Now,
+                            ImageThumbnail = System.IO.File.ReadAllBytes(tempFile),
+                            Name = fileName,
+                            Path = filePath,
+                            SizeInKb = (int)((decimal)(new System.IO.FileInfo(newFile).Length) / 1024M),
+                            //Nullable doesn't work for some reason
+                            UpdatedDate = DateTime.MinValue,
+                            FileHash = fileHash
+                        });
+
+                        System.IO.File.Delete(tempFile);
+                        System.Diagnostics.Debug.Write($"Saving '{newFile}'");
+                        db.SaveChanges();
+                    }                    
                 });
             }
+        }
 
+        public static string GetChecksumBuffered(Stream stream)
+        {
+            using (var bufferedStream = new BufferedStream(stream, 1024 * 32))
+            {
+                var sha = new SHA256Managed();
+                byte[] checksum = sha.ComputeHash(bufferedStream);
+                return BitConverter.ToString(checksum).Replace("-", String.Empty);
+            }
         }
 
         public static void PesToJpg(string pesFile, string targetFile)
         {
+            System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            startInfo.RedirectStandardOutput = true;
+            startInfo.RedirectStandardError = true;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = true;
             startInfo.FileName = "magick";
             startInfo.Arguments = $"convert \"{pesFile}\" \"{targetFile}\"";
             process.StartInfo = startInfo;
             process.Start();
+            process.WaitForExit();
         }
 
         public static string[] TokenizeName(string fileName)

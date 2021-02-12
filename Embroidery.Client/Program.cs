@@ -1,7 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Embroidery.Client.Crawler;
 using System;
+using System.IO;
 
 namespace Embroidery.Client
 {
@@ -12,9 +14,9 @@ namespace Embroidery.Client
         // yet and stuff might break.
         public static void Main(string[] args)
         {
-            var embroideryDirectory = @"\\nas.myfournier.com\Public\embroidery designs";
+            var embroideryDirectory = System.Environment.CurrentDirectory + @"\..\..\..\..\SampleData";
             var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Embroidery));
-
+            
             Crawler.Execution.Run(
                 embroideryDirectory, 
                 System.IO.Path.Combine(folder, "temp"));

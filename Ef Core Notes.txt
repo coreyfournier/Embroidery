@@ -1,5 +1,9 @@
 Add-Migration InitialCreate
 update-database
+Roll back all migrations
+	Update-Database -Migration:0
+Remove the last migration. Only using this after you have rolled it back
+	Remove-Migration
 
 Install the extension
 Go to Tools, then Sql Lite

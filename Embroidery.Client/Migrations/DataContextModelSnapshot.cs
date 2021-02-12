@@ -25,6 +25,11 @@ namespace Embroidery.Client.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FileHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("ImageThumbnail")
                         .HasColumnType("BLOB");
 
@@ -41,10 +46,15 @@ namespace Embroidery.Client.Migrations
                     b.Property<int>("SizeInKb")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("UpdatedDate")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("FileHash");
+
+                    b.HasIndex("Name", "Path")
+                        .IsUnique();
 
                     b.ToTable("Files");
                 });
@@ -66,7 +76,7 @@ namespace Embroidery.Client.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("UpdatedDate")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
