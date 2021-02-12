@@ -9,15 +9,21 @@ using System.Threading.Tasks;
 
 namespace Embroidery.Client.Crawler
 {
-    public class Execution
+    public class Execution : IDisposable
     {
+        private System.Threading.CancellationTokenSource _cancellationToken;
+        public Execution(System.Threading.CancellationTokenSource cancellationToken)
+        {
+            _cancellationToken = cancellationToken;
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="pathToSearch"></param>
         /// <param name="tempFolder"></param>
         /// <exception cref="System.IO.DirectoryNotFoundException"></exception>
-        public static void Run(string pathToSearch, string tempFolder)
+        public void Run(string pathToSearch, string tempFolder)
         {
             if (!System.IO.Directory.Exists(pathToSearch))
                 throw new System.IO.DirectoryNotFoundException($"The path to search ({pathToSearch}) was not found");
@@ -25,76 +31,89 @@ namespace Embroidery.Client.Crawler
             if (!System.IO.Directory.Exists(tempFolder))
                 System.IO.Directory.CreateDirectory(tempFolder);
 
-            using (var db = new DataContext())
-            {
-                Dictionary<string,int> tagNameLookup = new Dictionary<string, int>();
-                
-                foreach (var item in db.Tags.Select(x => new { x.Id, x.Name }))
-                    tagNameLookup.Add(item.Name, item.Id);
-
-                Refresh(pathToSearch, (newFile) =>
+            var token = _cancellationToken.Token;
+            var task = new Task(() => {
+                using (var db = new DataContext())
                 {
-                    var fileName = System.IO.Path.GetFileName(newFile);
-                    var filePath = System.IO.Path.GetFullPath(newFile);
+                    Dictionary<string, int> tagNameLookup = new Dictionary<string, int>();
 
+                    foreach (var item in db.Tags.Select(x => new { x.Id, x.Name }))
+                        tagNameLookup.Add(item.Name, item.Id);
 
-                    if (db.Files.Any(x => x.Name == fileName && x.Path == filePath))
-                    { 
-                        //Anything to update?
-                    }
-                    else
+                    Refresh(pathToSearch, (newFile) =>
                     {
-                        var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
-                        string fileHash;
-                        List<Tag> fileTags = new List<Tag>();
+                        var fileName = System.IO.Path.GetFileName(newFile);
+                        var filePath = System.IO.Path.GetFullPath(newFile);
 
-                        System.Diagnostics.Debug.WriteLine($"Working on {newFile}");
 
-                        PesToJpg(newFile, tempFile);
-
-                        using (var fileStream = new System.IO.FileStream(newFile, FileMode.Open))
+                        if (db.Files.Any(x => x.Name == fileName && x.Path == filePath))
                         {
-                            fileHash = GetChecksumBuffered(fileStream);
+                            System.Diagnostics.Debug.WriteLine($"Already indexed {newFile}");
+                            //Anything to update?
                         }
-
-                        var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(newFile));
-
-                        //Add any new tags, and then add them to the lookup table
-                        foreach (var tag in foundTags)
+                        else
                         {
-                            if (!tagNameLookup.ContainsKey(tag))
+                            var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
+                            string fileHash;
+                            List<Tag> fileTags = new List<Tag>();
+
+                            System.Diagnostics.Debug.WriteLine($"Working on {newFile}");
+
+                            PesToJpg(newFile, tempFile);
+
+                            using (var fileStream = new System.IO.FileStream(newFile, FileMode.Open))
                             {
-                                var newTag = new Tag()
-                                {
-                                    CreatedDate = DateTime.Now,
-                                    Name = tag,
-                                    //Nullable doesn't work
-                                    UpdatedDate = DateTime.MinValue
-                                };
-                                db.Tags.Add(newTag);
-                                db.SaveChanges();
-                                tagNameLookup.Add(tag, newTag.Id);
+                                fileHash = GetChecksumBuffered(fileStream);
                             }
+
+                            var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(newFile));
+
+                            //Add any new tags, and then add them to the lookup table
+                            foreach (var tag in foundTags)
+                            {
+                                if (token.IsCancellationRequested)
+                                    return;
+                                if (!tagNameLookup.ContainsKey(tag))
+                                {
+                                    var newTag = new Tag()
+                                    {
+                                        CreatedDate = DateTime.Now,
+                                        Name = tag,
+                                        //Nullable doesn't work
+                                        UpdatedDate = DateTime.MinValue
+                                    };
+                                    db.Tags.Add(newTag);
+                                    db.SaveChanges();
+                                    tagNameLookup.Add(tag, newTag.Id);
+                                }
+                            }
+
+                            if (token.IsCancellationRequested)
+                                return;
+
+                            db.Files.Add(new Models.File()
+                            {
+                                CreatedDate = DateTime.Now,
+                                ImageThumbnail = System.IO.File.ReadAllBytes(tempFile),
+                                Name = fileName,
+                                Path = filePath,
+                                SizeInKb = (int)((decimal)(new System.IO.FileInfo(newFile).Length) / 1024M),
+                                //Nullable doesn't work for some reason
+                                UpdatedDate = DateTime.MinValue,
+                                FileHash = fileHash
+                            });
+
+                            System.IO.File.Delete(tempFile);
+                            System.Diagnostics.Debug.Write($"Saving '{newFile}'");
+                            db.SaveChanges();
                         }
+                    });
+                }
 
-                        db.Files.Add(new Models.File()
-                        {
-                            CreatedDate = DateTime.Now,
-                            ImageThumbnail = System.IO.File.ReadAllBytes(tempFile),
-                            Name = fileName,
-                            Path = filePath,
-                            SizeInKb = (int)((decimal)(new System.IO.FileInfo(newFile).Length) / 1024M),
-                            //Nullable doesn't work for some reason
-                            UpdatedDate = DateTime.MinValue,
-                            FileHash = fileHash
-                        });
+            },token);
 
-                        System.IO.File.Delete(tempFile);
-                        System.Diagnostics.Debug.Write($"Saving '{newFile}'");
-                        db.SaveChanges();
-                    }                    
-                });
-            }
+
+            task.Start();
         }
 
         public static string GetChecksumBuffered(Stream stream)
@@ -172,6 +191,11 @@ namespace Embroidery.Client.Crawler
             //Tunnel into each sub folder
             foreach (var folder in System.IO.Directory.GetDirectories(path))
                 Refresh(folder, fileFound);
+        }
+
+        public void Dispose()
+        {
+            _cancellationToken.Cancel();
         }
     }
 }
