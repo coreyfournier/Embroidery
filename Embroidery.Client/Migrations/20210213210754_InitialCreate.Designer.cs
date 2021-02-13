@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Embroidery.Client.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20210212015758_InitialCreate")]
+    [Migration("20210213210754_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,13 +27,29 @@ namespace Embroidery.Client.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Extension")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FileHash")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(388)
+                        .HasColumnType("TEXT");
+
                     b.Property<byte[]>("ImageThumbnail")
                         .HasColumnType("BLOB");
+
+                    b.Property<byte?>("Length")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("LikeFileId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -51,11 +67,16 @@ namespace Embroidery.Client.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<byte?>("Width")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FileHash");
 
-                    b.HasIndex("Name", "Path")
+                    b.HasIndex("LikeFileId");
+
+                    b.HasIndex("Path", "Name")
                         .IsUnique();
 
                     b.ToTable("Files");
@@ -86,6 +107,15 @@ namespace Embroidery.Client.Migrations
                     b.HasIndex("FileId");
 
                     b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("Embroidery.Client.Models.File", b =>
+                {
+                    b.HasOne("Embroidery.Client.Models.File", "LikeFile")
+                        .WithMany()
+                        .HasForeignKey("LikeFileId");
+
+                    b.Navigation("LikeFile");
                 });
 
             modelBuilder.Entity("Embroidery.Client.Models.Tag", b =>

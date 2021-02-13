@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:utils="clr-namespace:Embroidery.Client.Utilities"
+             x:Class="Embroidery.Client.Views.FileView">
+
+	<UserControl.Resources>
+		<utils:BitmapConverter x:Key="bitMapFromDb"/>
+	</UserControl.Resources>
+
+	<Grid ColumnDefinitions="Auto,4,Auto">
+		<Image
+			Grid.Row="0" Grid.Column="0"
+	Width="75"
+	Height="75"
+	Source="{Binding ImageThumbnail, Converter={StaticResource bitMapFromDb}}"/>
+		<Label Grid.Row="0" Grid.Column="2" Content="{Binding Name}"></Label>
+	</Grid>
+</UserControl>

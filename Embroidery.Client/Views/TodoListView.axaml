@@ -3,16 +3,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="200" d:DesignHeight="300"
+			 xmlns:utils="clr-namespace:Embroidery.Client.Utilities"
+			 xmlns:models="clr-namespace:Embroidery.Client.Models"
+			 xmlns:customViews="clr-namespace:Embroidery.Client.Views"
              x:Class="Embroidery.Client.Views.TodoListView">
-  <DockPanel>
-    <Button DockPanel.Dock="Bottom">Add an item</Button>
-    <ItemsControl Items="{Binding Items}">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <CheckBox Margin="4"
-                    Content="{Binding Name}"/>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
-  </DockPanel>
+	<UserControl.Resources>
+		<utils:BitmapConverter x:Key="bitMapFromDb"/>
+	</UserControl.Resources>
+	<ScrollViewer VerticalScrollBarVisibility="Auto">
+		<WrapPanel VerticalAlignment="Top" HorizontalAlignment="Center">
+			<ItemsControl Items="{Binding Items}">
+				<ItemsControl.ItemTemplate>
+					<DataTemplate DataType="{x:Type models:File}">
+						<customViews:FileView></customViews:FileView>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</WrapPanel>
+	</ScrollViewer>
 </UserControl>

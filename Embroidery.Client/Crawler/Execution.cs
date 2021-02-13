@@ -42,29 +42,24 @@ namespace Embroidery.Client.Crawler
 
                     Refresh(pathToSearch, (newFile) =>
                     {
-                        var fileName = System.IO.Path.GetFileName(newFile);
+                        var fileNameNoExtension = System.IO.Path.GetFileNameWithoutExtension(newFile);
+                        var fileNameWithExtension = System.IO.Path.GetFileName(newFile);
                         var filePath = System.IO.Path.GetFullPath(newFile);
 
-
-                        if (db.Files.Any(x => x.Name == fileName && x.Path == filePath))
+                        if (db.Files.Any(x => x.Name == fileNameNoExtension && x.Path == filePath))
                         {
                             System.Diagnostics.Debug.WriteLine($"Already indexed {newFile}");
                             //Anything to update?
                         }
                         else
                         {
-                            var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
+                            var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".bmp");
                             string fileHash;
                             List<Tag> fileTags = new List<Tag>();
 
                             System.Diagnostics.Debug.WriteLine($"Working on {newFile}");
 
-                            PesToJpg(newFile, tempFile);
-
-                            using (var fileStream = new System.IO.FileStream(newFile, FileMode.Open))
-                            {
-                                fileHash = GetChecksumBuffered(fileStream);
-                            }
+                            PesToTargetFile(newFile, tempFile);
 
                             var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(newFile));
 
@@ -91,17 +86,7 @@ namespace Embroidery.Client.Crawler
                             if (token.IsCancellationRequested)
                                 return;
 
-                            db.Files.Add(new Models.File()
-                            {
-                                CreatedDate = DateTime.Now,
-                                ImageThumbnail = System.IO.File.ReadAllBytes(tempFile),
-                                Name = fileName,
-                                Path = filePath,
-                                SizeInKb = (int)((decimal)(new System.IO.FileInfo(newFile).Length) / 1024M),
-                                //Nullable doesn't work for some reason
-                                UpdatedDate = DateTime.MinValue,
-                                FileHash = fileHash
-                            });
+                            db.Files.Add(new Models.File(tempFile, newFile));
 
                             System.IO.File.Delete(tempFile);
                             System.Diagnostics.Debug.Write($"Saving '{newFile}'");
@@ -110,23 +95,20 @@ namespace Embroidery.Client.Crawler
                     });
                 }
 
-            },token);
+            }, token);
 
 
             task.Start();
         }
 
-        public static string GetChecksumBuffered(Stream stream)
-        {
-            using (var bufferedStream = new BufferedStream(stream, 1024 * 32))
-            {
-                var sha = new SHA256Managed();
-                byte[] checksum = sha.ComputeHash(bufferedStream);
-                return BitConverter.ToString(checksum).Replace("-", String.Empty);
-            }
-        }
 
-        public static void PesToJpg(string pesFile, string targetFile)
+
+        /// <summary>
+        /// Converts the pes file to what ever the target file type is
+        /// </summary>
+        /// <param name="pesFile"></param>
+        /// <param name="targetFile"></param>
+        public static void PesToTargetFile(string pesFile, string targetFile)
         {
             System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
             System.Diagnostics.Process process = new System.Diagnostics.Process();
@@ -137,18 +119,18 @@ namespace Embroidery.Client.Crawler
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             startInfo.FileName = "magick";
-            startInfo.Arguments = $"convert \"{pesFile}\" \"{targetFile}\"";
+            startInfo.Arguments = $"convert \"{pesFile}\" -trim +repage -depth 4 -compress RLE -type palette BMP3:\"{targetFile}\"";
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
         }
 
         public static string[] TokenizeName(string fileName)
-        {            
+        {
             StringBuilder sb = new StringBuilder();
             List<string> list = new List<string>();
 
-             var charArray = fileName.ToCharArray();
+            var charArray = fileName.ToCharArray();
 
             for (int i = 0; i < charArray.Length; i++)
             {
@@ -167,7 +149,7 @@ namespace Embroidery.Client.Crawler
                     }
                 }
 
-                if(charArray[i] != ' ')
+                if (charArray[i] != ' ')
                     sb.Append(charArray[i]);
             }
 
