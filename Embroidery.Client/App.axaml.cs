@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Embroidery.Client.ViewModels;
+using Embroidery.Client.Views;
 
 namespace Embroidery.Client
 {
@@ -13,12 +15,17 @@ namespace Embroidery.Client
 
         public override void OnFrameworkInitializationCompleted()
         {
+            base.OnFrameworkInitializationCompleted();
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
-            }
+                var db = new FakeDatabase();
 
-            base.OnFrameworkInitializationCompleted();
+                desktop.MainWindow = new MainWindow
+                {
+                    DataContext = new MainWindowViewModel(db),
+                };
+            }
         }
     }
 }

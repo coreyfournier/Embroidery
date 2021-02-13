@@ -3,9 +3,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Embroidery.Client.MainWindow"
-		xmlns:views="clr-namespace:Embroidery.Client"
-        Title="Embroidery.Client">
-	
+        x:Class="Embroidery.Client.Views.MainWindow"
+		xmlns:views="clr-namespace:Embroidery.Client.Views"
+        Title="Embroidery.Client"
+		Content="{Binding List}">
+
+	<!--
 	<views:UserControl1/>
+	-->
 </Window>
