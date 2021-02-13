@@ -8,9 +8,9 @@ namespace Embroidery.Client.ViewModels
 {
     class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(FakeDatabase db)
+        public MainWindowViewModel(DataContext db)
         {
-            List = new TodoListViewModel(db.GetItems());
+            List = new TodoListViewModel(db.Files);
         }
 
         public TodoListViewModel List { get; }

@@ -6,11 +6,11 @@ namespace Embroidery.Client.ViewModels
 {
     public class TodoListViewModel : ViewModelBase
     {
-        public TodoListViewModel(IEnumerable<TodoItem> items)
+        public TodoListViewModel(IEnumerable<File> items)
         {
-            Items = new ObservableCollection<TodoItem>(items);
+            Items = new ObservableCollection<File>(items);
         }
 
-        public ObservableCollection<TodoItem> Items { get; }
+        public ObservableCollection<File> Items { get; }
     }
 }

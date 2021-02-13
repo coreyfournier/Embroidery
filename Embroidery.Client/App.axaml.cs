@@ -19,7 +19,7 @@ namespace Embroidery.Client
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var db = new FakeDatabase();
+                var db = new DataContext();
 
                 desktop.MainWindow = new MainWindow
                 {
