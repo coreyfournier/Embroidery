@@ -126,8 +126,14 @@ namespace Embroidery.Client.Crawler
         /// </summary>
         /// <param name="pesFile"></param>
         /// <param name="targetFile"></param>
+        ///<exception cref="ImageMagickNotFoundException"></exception>
         public static void PesToTargetFile(string pesFile, string targetFile)
         {
+            var targetPath = System.IO.Path.GetDirectoryName(targetFile);
+
+            if (!System.IO.Directory.Exists(targetPath))
+                System.IO.Directory.CreateDirectory(targetPath);
+
             System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -139,7 +145,19 @@ namespace Embroidery.Client.Crawler
             startInfo.FileName = "magick";
             startInfo.Arguments = $"convert \"{pesFile}\" -trim +repage -depth 4 -compress RLE -type palette BMP3:\"{targetFile}\"";
             process.StartInfo = startInfo;
-            process.Start();
+            try
+            {
+                process.Start();
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                if (ex.Message.Contains("The system cannot find the file specified"))
+                {
+                    throw new ImageMagickNotFoundException(ex);
+                }
+                else
+                    throw ex;
+            }
             process.WaitForExit();
         }
 

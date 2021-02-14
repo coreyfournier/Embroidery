@@ -16,7 +16,7 @@ namespace Embroidery.Client
 
         public static void Main(string[] args)
         {
-            var embroideryDirectory = System.Environment.CurrentDirectory + @"\..\..\..\..\SampleData";
+            var embroideryDirectory = System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\..\SampleData");
             var folder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Embroidery));
             System.Threading.CancellationTokenSource cancellationToken = new System.Threading.CancellationTokenSource();
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
