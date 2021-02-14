@@ -15,7 +15,7 @@
 			Grid.Row="0" Grid.Column="0"
 	Width="75"
 	Height="75"
-	Source="{Binding ImageThumbnail, Converter={StaticResource bitMapFromDb}}"/>
+	Source="{Binding, Converter={StaticResource bitMapFromDb}}"/>
 		<Label Grid.Row="0" Grid.Column="2" Content="{Binding Name}"></Label>
 	</Grid>
 </UserControl>

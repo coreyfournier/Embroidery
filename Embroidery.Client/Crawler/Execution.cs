@@ -1,6 +1,8 @@
 ﻿using Embroidery.Client.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -22,8 +24,9 @@ namespace Embroidery.Client.Crawler
         /// </summary>
         /// <param name="pathToSearch"></param>
         /// <param name="tempFolder"></param>
+        /// <param name="fileList">List to observe changes to</param>
         /// <exception cref="System.IO.DirectoryNotFoundException"></exception>
-        public void Run(string pathToSearch, string tempFolder)
+        public void Run(string pathToSearch, string tempFolder, ObservableCollection<Models.File> fileList)
         {
             if (!System.IO.Directory.Exists(pathToSearch))
                 throw new System.IO.DirectoryNotFoundException($"The path to search ({pathToSearch}) was not found");
@@ -59,7 +62,7 @@ namespace Embroidery.Client.Crawler
                         }
                         else
                         {
-                            var imageFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".bmp");
+                            var imageFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
                             List<Tag> fileTags = new List<Tag>();
 
                             System.Diagnostics.Debug.WriteLine($"Working on {foundFile}");
@@ -104,13 +107,15 @@ namespace Embroidery.Client.Crawler
 
                                 folderLookup.Add(filePath, newFolder.Id);
                                 System.Diagnostics.Debug.WriteLine($"Found folder {filePath}");
-                            }                            
-
-                            db.Files.Add(new Models.File(imageFile, foundFile, folderLookup[filePath]));
+                            }
+                            var newFile = new Models.File(imageFile, foundFile, folderLookup[filePath]);
+                            db.Files.Add(newFile);
 
                             System.IO.File.Delete(imageFile);
                             System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
                             db.SaveChanges();
+
+                            fileList.Add(newFile);
                         }
                     });
                 }
@@ -143,7 +148,8 @@ namespace Embroidery.Client.Crawler
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
             startInfo.FileName = "magick";
-            startInfo.Arguments = $"convert \"{pesFile}\" -trim +repage -depth 4 -compress RLE -type palette BMP3:\"{targetFile}\"";
+            //-trim +repage -depth 4 -compress RLE -type palette BMP3:
+            startInfo.Arguments = $"convert \"{pesFile}\" \"{targetFile}\"";
             process.StartInfo = startInfo;
             try
             {
@@ -214,6 +220,6 @@ namespace Embroidery.Client.Crawler
         public void Dispose()
         {
             _cancellationToken.Cancel();
-        }
+        }       
     }
 }

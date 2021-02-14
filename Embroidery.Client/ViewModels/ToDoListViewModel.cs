@@ -6,9 +6,9 @@ namespace Embroidery.Client.ViewModels
 {
     public class TodoListViewModel : ViewModelBase
     {
-        public TodoListViewModel(IEnumerable<File> items)
+        public TodoListViewModel(ObservableCollection<File> items)
         {
-            Items = new ObservableCollection<File>(items);
+            Items = items;
         }
 
         public ObservableCollection<File> Items { get; }
