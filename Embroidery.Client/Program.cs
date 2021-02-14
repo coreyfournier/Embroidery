@@ -21,6 +21,13 @@ namespace Embroidery.Client
             System.Threading.CancellationTokenSource cancellationToken = new System.Threading.CancellationTokenSource();
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
 
+            //Make sure the database is created 
+            using (var client = new DataContext())
+            {
+                client.Database.EnsureCreated();
+            }
+
+            //Start the crawler to look for images
             crawler = new Execution(cancellationToken);
 
             crawler.Run(
