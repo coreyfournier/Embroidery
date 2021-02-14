@@ -21,6 +21,12 @@ namespace Embroidery.Client
         {            
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
 
+            if (!System.IO.Directory.Exists(UserApplicationFolder))
+                System.IO.Directory.CreateDirectory(UserApplicationFolder);
+
+            if (!System.IO.Directory.Exists(ImageCacheFolder))
+                System.IO.Directory.CreateDirectory(ImageCacheFolder);
+
             //Make sure the database is created 
             using (var client = new DataContext())
             {
@@ -28,21 +34,13 @@ namespace Embroidery.Client
             }
 
             BuildAvaloniaApp()
-              .StartWithClassicDesktopLifetime(args);
-
-            if (!System.IO.Directory.Exists(UserApplicationFolder))
-                System.IO.Directory.CreateDirectory(UserApplicationFolder);
-
-            if (!System.IO.Directory.Exists(ImageCacheFolder))
-                System.IO.Directory.CreateDirectory(ImageCacheFolder);
-
-            // do some work
+              .StartWithClassicDesktopLifetime(args);          
 
         }
 
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
-            //crawler.Dispose();
+            
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
