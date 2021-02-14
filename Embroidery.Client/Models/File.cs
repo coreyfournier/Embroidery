@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Embroidery.Client.Models
 {
-    [Index(nameof(Path), nameof(Name), IsUnique = true), Index(nameof(FileHash), IsUnique = false)]
+    [Index(nameof(FolderId), nameof(Name), IsUnique = true), Index(nameof(FileHash), IsUnique = false)]
     public class File
     {
         public File() { }
 
-        public File(string thumbnail, string fullFilePath)
+        public File(string thumbnail, string fullFilePath, int folderId)
         {
             using (var fileStream = new System.IO.FileStream(fullFilePath, FileMode.Open))
             {
@@ -27,11 +27,13 @@ namespace Embroidery.Client.Models
             ImageThumbnail = System.IO.File.ReadAllBytes(thumbnail);
             Name = System.IO.Path.GetFileNameWithoutExtension(fullFilePath);
             FullName = System.IO.Path.GetFileName(fullFilePath);
-            Extension = System.IO.Path.GetExtension(fullFilePath);
-            Path = System.IO.Path.GetFullPath(fullFilePath);
+            //Remove the leading dot
+            Extension = System.IO.Path.GetExtension(fullFilePath).ToLower();
+            Extension = Extension.Substring(1, Extension.Length - 1);
             SizeInKb = (int)((decimal)(new System.IO.FileInfo(fullFilePath).Length) / 1024M);
             //Nullable doesn't work for some reason
             UpdatedDate = DateTime.MinValue;
+            FolderId = folderId;
 
             ParseAndSetForLengthAndWidth(Name);
         }
@@ -84,12 +86,6 @@ namespace Embroidery.Client.Models
         public string Extension { get; set; }
 
         /// <summary>
-        /// Path were the file is located with no file name
-        /// </summary>
-        [MaxLength(256), Required]
-        public string Path { get; set; } = "";
-
-        /// <summary>
         /// Path + name + extension
         /// </summary>
         [MaxLength(388), Required]
@@ -119,5 +115,10 @@ namespace Embroidery.Client.Models
 
         public byte? Length { get; set; }
         public byte? Width { get; set; }
+                
+        public Folder Folder { get; set; }
+
+        [Required]
+        public int FolderId { get; set; }
     }
 }

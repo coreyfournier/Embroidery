@@ -16,5 +16,7 @@ namespace Embroidery.Client
         public DbSet<File> Files { get; set; }
 
         public DbSet<Tag> Tags { get; set; }
+
+        public DbSet<Folder> Folders { get; set; }
     }
 }

@@ -35,6 +35,9 @@ namespace Embroidery.Client.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("FolderId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(388)
@@ -54,11 +57,6 @@ namespace Embroidery.Client.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("SizeInKb")
                         .HasColumnType("INTEGER");
 
@@ -74,10 +72,35 @@ namespace Embroidery.Client.Migrations
 
                     b.HasIndex("LikeFileId");
 
-                    b.HasIndex("Path", "Name")
+                    b.HasIndex("FolderId", "Name")
                         .IsUnique();
 
                     b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("Embroidery.Client.Models.Folder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Path")
+                        .IsUnique();
+
+                    b.ToTable("Folders");
                 });
 
             modelBuilder.Entity("Embroidery.Client.Models.Tag", b =>
@@ -92,6 +115,9 @@ namespace Embroidery.Client.Migrations
                     b.Property<int?>("FileId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("FolderId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -104,14 +130,24 @@ namespace Embroidery.Client.Migrations
 
                     b.HasIndex("FileId");
 
+                    b.HasIndex("FolderId");
+
                     b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Embroidery.Client.Models.File", b =>
                 {
+                    b.HasOne("Embroidery.Client.Models.Folder", "Folder")
+                        .WithMany("Files")
+                        .HasForeignKey("FolderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Embroidery.Client.Models.File", "LikeFile")
                         .WithMany()
                         .HasForeignKey("LikeFileId");
+
+                    b.Navigation("Folder");
 
                     b.Navigation("LikeFile");
                 });
@@ -121,10 +157,21 @@ namespace Embroidery.Client.Migrations
                     b.HasOne("Embroidery.Client.Models.File", null)
                         .WithMany("Tags")
                         .HasForeignKey("FileId");
+
+                    b.HasOne("Embroidery.Client.Models.Folder", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("FolderId");
                 });
 
             modelBuilder.Entity("Embroidery.Client.Models.File", b =>
                 {
+                    b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("Embroidery.Client.Models.Folder", b =>
+                {
+                    b.Navigation("Files");
+
                     b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618

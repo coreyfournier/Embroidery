@@ -8,6 +8,21 @@ namespace Embroidery.Client.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Folders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Path = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Folders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Files",
                 columns: table => new
                 {
@@ -15,7 +30,6 @@ namespace Embroidery.Client.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     Extension = table.Column<string>(type: "TEXT", maxLength: 4, nullable: false),
-                    Path = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     FullName = table.Column<string>(type: "TEXT", maxLength: 388, nullable: false),
                     SizeInKb = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -24,7 +38,8 @@ namespace Embroidery.Client.Migrations
                     FileHash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     LikeFileId = table.Column<int>(type: "INTEGER", nullable: true),
                     Length = table.Column<byte>(type: "INTEGER", nullable: true),
-                    Width = table.Column<byte>(type: "INTEGER", nullable: true)
+                    Width = table.Column<byte>(type: "INTEGER", nullable: true),
+                    FolderId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,6 +50,12 @@ namespace Embroidery.Client.Migrations
                         principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Files_Folders_FolderId",
+                        column: x => x.FolderId,
+                        principalTable: "Folders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,7 +67,8 @@ namespace Embroidery.Client.Migrations
                     Name = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    FileId = table.Column<int>(type: "INTEGER", nullable: true)
+                    FileId = table.Column<int>(type: "INTEGER", nullable: true),
+                    FolderId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,6 +79,12 @@ namespace Embroidery.Client.Migrations
                         principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Tags_Folders_FolderId",
+                        column: x => x.FolderId,
+                        principalTable: "Folders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -65,20 +93,31 @@ namespace Embroidery.Client.Migrations
                 column: "FileHash");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Files_FolderId_Name",
+                table: "Files",
+                columns: new[] { "FolderId", "Name" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Files_LikeFileId",
                 table: "Files",
                 column: "LikeFileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Files_Path_Name",
-                table: "Files",
-                columns: new[] { "Path", "Name" },
+                name: "IX_Folders_Path",
+                table: "Folders",
+                column: "Path",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tags_FileId",
                 table: "Tags",
                 column: "FileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tags_FolderId",
+                table: "Tags",
+                column: "FolderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -88,6 +127,9 @@ namespace Embroidery.Client.Migrations
 
             migrationBuilder.DropTable(
                 name: "Files");
+
+            migrationBuilder.DropTable(
+                name: "Folders");
         }
     }
 }

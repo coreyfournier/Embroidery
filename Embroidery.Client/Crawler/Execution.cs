@@ -36,32 +36,37 @@ namespace Embroidery.Client.Crawler
                 using (var db = new DataContext())
                 {
                     Dictionary<string, int> tagNameLookup = new Dictionary<string, int>();
+                    Dictionary<string, int> folderLookup = new Dictionary<string, int>();
+                    
+                    //Creating a lookup 
+                    foreach (var item in db.Folders.Select(x => new { x.Id, x.Path }))
+                        folderLookup.Add(item.Path, item.Id);
 
                     foreach (var item in db.Tags.Select(x => new { x.Id, x.Name }))
                         tagNameLookup.Add(item.Name, item.Id);
 
-                    Refresh(pathToSearch, (newFile) =>
+                    Refresh(pathToSearch, (foundFile) =>
                     {
-                        var fileNameNoExtension = System.IO.Path.GetFileNameWithoutExtension(newFile);
-                        var fileNameWithExtension = System.IO.Path.GetFileName(newFile);
-                        var filePath = System.IO.Path.GetFullPath(newFile);
+                        var fileNameNoExtension = System.IO.Path.GetFileNameWithoutExtension(foundFile);
+                        var filePath = System.IO.Directory.GetParent(foundFile).FullName;
 
-                        if (db.Files.Any(x => x.Name == fileNameNoExtension && x.Path == filePath))
+                        
+                        if (folderLookup.ContainsKey(filePath) && db.Files.Any(x => x.Name == fileNameNoExtension && x.FolderId == folderLookup[filePath]))
                         {
-                            System.Diagnostics.Debug.WriteLine($"Already indexed {newFile}");
+                            System.Diagnostics.Debug.WriteLine($"Already indexed {foundFile}");
                             //Anything to update?
+                            //Will need to check the file for changes
                         }
                         else
                         {
-                            var tempFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".bmp");
-                            string fileHash;
+                            var imageFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".bmp");
                             List<Tag> fileTags = new List<Tag>();
 
-                            System.Diagnostics.Debug.WriteLine($"Working on {newFile}");
+                            System.Diagnostics.Debug.WriteLine($"Working on {foundFile}");
 
-                            PesToTargetFile(newFile, tempFile);
+                            PesToTargetFile(foundFile, imageFile);
 
-                            var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(newFile));
+                            var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(foundFile));
 
                             //Add any new tags, and then add them to the lookup table
                             foreach (var tag in foundTags)
@@ -86,10 +91,25 @@ namespace Embroidery.Client.Crawler
                             if (token.IsCancellationRequested)
                                 return;
 
-                            db.Files.Add(new Models.File(tempFile, newFile));
+                            //If the folder doesn't exists, then add it and then to the lookup
+                            if (!folderLookup.ContainsKey(filePath))
+                            {
+                                var newFolder = new Folder()
+                                {
+                                    Path = filePath,
+                                    CreatedDate = DateTime.Now
+                                };
+                                db.Folders.Add(newFolder);
+                                db.SaveChanges();
 
-                            System.IO.File.Delete(tempFile);
-                            System.Diagnostics.Debug.Write($"Saving '{newFile}'");
+                                folderLookup.Add(filePath, newFolder.Id);
+                                System.Diagnostics.Debug.WriteLine($"Found folder {filePath}");
+                            }                            
+
+                            db.Files.Add(new Models.File(imageFile, foundFile, folderLookup[filePath]));
+
+                            System.IO.File.Delete(imageFile);
+                            System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
                             db.SaveChanges();
                         }
                     });
@@ -100,8 +120,6 @@ namespace Embroidery.Client.Crawler
 
             task.Start();
         }
-
-
 
         /// <summary>
         /// Converts the pes file to what ever the target file type is
