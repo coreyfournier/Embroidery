@@ -142,5 +142,23 @@ namespace Embroidery.Client.Models
         [MaxLength(512)]
         public string? ErrorMessage { get; set; }
 
+        public string DisplayName {
+            get {
+                if (string.IsNullOrEmpty(CleanName))
+                    return Name;
+                else
+                    return CleanName;
+            }
+        }
+
+        public string DisplaySize { get {
+                if (FontSize > 0)
+                    return $"{FontSize}";
+                else if (Length.HasValue && Width.HasValue)
+                    return $"{Length.Value}x{Width.Value}";
+                else
+                    return string.Empty;
+            } 
+        }
     }
 }

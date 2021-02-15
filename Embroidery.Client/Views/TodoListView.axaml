@@ -10,7 +10,6 @@
 	<UserControl.Resources>
 		<utils:BitmapConverter x:Key="bitMapFromDb"/>
 	</UserControl.Resources>
-	<ScrollViewer VerticalScrollBarVisibility="Auto">
 		<ListBox Items="{Binding Items}">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate DataType="{x:Type models:File}">
@@ -18,5 +17,4 @@
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>
 		</ListBox>
-	</ScrollViewer>
 </UserControl>

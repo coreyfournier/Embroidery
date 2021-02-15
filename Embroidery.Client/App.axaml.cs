@@ -27,7 +27,7 @@ namespace Embroidery.Client
                 ObservableCollection<Models.File> files = new ObservableCollection<Models.File>(
                     db.Files
                     .Where(x=> !x.HasError)
-                    .OrderByDescending(x=> x.CreatedDate)
+                    .OrderByDescending(x=> x.Id)
                     .Take(100)
                     .ToList()
                     );

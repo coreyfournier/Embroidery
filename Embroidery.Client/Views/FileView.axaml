@@ -10,12 +10,23 @@
 		<utils:BitmapConverter x:Key="bitMapFromDb"/>
 	</UserControl.Resources>
 
-	<Grid ColumnDefinitions="Auto,4,Auto">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="75" />
+			<ColumnDefinition Width="Auto" MinWidth="300"/>
+			<ColumnDefinition Width="Auto"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="76"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
 		<Image
-			Grid.Row="0" Grid.Column="0"
+			Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
 	Width="75"
 	Height="75"
 	Source="{Binding, Converter={StaticResource bitMapFromDb}}"/>
-		<Label Grid.Row="0" Grid.Column="2" Content="{Binding Name}"></Label>
+		<Label Grid.Row="0" Grid.Column="1" Content="{Binding DisplayName}" VerticalAlignment="Top"></Label>
+		<Label Grid.Row="1" Grid.Column="1" Content="{Binding DisplaySize}" VerticalAlignment="Top"></Label>
 	</Grid>
 </UserControl>
