@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace Embroidery.Client.Views
@@ -10,6 +12,8 @@ namespace Embroidery.Client.Views
         {
             InitializeComponent();
         }
+
+
 
         private void InitializeComponent()
         {

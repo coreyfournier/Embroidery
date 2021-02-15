@@ -6,10 +6,23 @@
 		Width="800" Height="600"
         x:Class="Embroidery.Client.Views.MainWindow"
 		xmlns:views="clr-namespace:Embroidery.Client.Views"
-        Title="Embroidery.Client"
-		Content="{Binding List}">
-
-	<!--
-	<views:UserControl1/>
-	-->
+        Title="Embroidery.Client">
+	
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="400" />
+			<ColumnDefinition Width="Auto"/>			
+		</Grid.ColumnDefinitions>
+		
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		
+		<views:TodoListView Content="{Binding List}"  Grid.Column="0" Grid.Row="0"></views:TodoListView>
+		<views:FileDetailView Name="FileDetail" 
+							  Grid.Column="1" Grid.Row="0" 
+							  VerticalContentAlignment="Top" 
+							  HorizontalContentAlignment="Center"></views:FileDetailView>
+	</Grid>
 </Window>

@@ -10,11 +10,11 @@
 	<UserControl.Resources>
 		<utils:BitmapConverter x:Key="bitMapFromDb"/>
 	</UserControl.Resources>
-		<ListBox Items="{Binding Items}">
+		<ListBox Items="{Binding Items}" SelectionChanged="RowClicked">
 				<ItemsControl.ItemTemplate>
 					<DataTemplate DataType="{x:Type models:GroupedFile}">
-						<customViews:FileView></customViews:FileView>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-		</ListBox>
+						<customViews:FileView></customViews:FileView>					
+					</DataTemplate>					
+				</ItemsControl.ItemTemplate>			
+	</ListBox>
 </UserControl>

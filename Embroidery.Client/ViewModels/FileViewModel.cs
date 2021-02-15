@@ -12,5 +12,10 @@ namespace Embroidery.Client.ViewModels
         }
 
         public File Item { get; }
+
+        public void RowClicked(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Clicked");
+        }
     }
 }

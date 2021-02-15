@@ -45,7 +45,7 @@ namespace Embroidery.Client.Utilities
                 return DbImageToBmpFile(file.Id, file.ImageThumbnail);
             }
 
-            throw new NotSupportedException();
+            return null;
         }
 
         private Bitmap DbImageToBmpFile(int fileId, byte[] jpgFile)
