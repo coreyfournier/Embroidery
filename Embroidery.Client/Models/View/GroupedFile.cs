@@ -8,13 +8,10 @@ namespace Embroidery.Client.Models.View
 {
     public class GroupedFile
     {
-        public int Id { get; set; }
+        public int FirstFileId { get; set; }
 
-        public string DisplayName { get; set; }
+        public string CleanName { get; set; }
 
-        public int TotalFiles { get; set; }
-
-        public string FolderPath { get; set; }
-
+        public int TotalLikeFiles { get; set; }
     }
 }

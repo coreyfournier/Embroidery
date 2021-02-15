@@ -26,7 +26,7 @@
 	Width="75"
 	Height="75"
 	Source="{Binding, Converter={StaticResource bitMapFromDb}}"/>
-		<Label Grid.Row="0" Grid.Column="1" Content="{Binding DisplayName}" VerticalAlignment="Top"></Label>
-		<Label Grid.Row="1" Grid.Column="1" Content="{Binding DisplaySize}" VerticalAlignment="Top"></Label>
+		<Label Grid.Row="0" Grid.Column="1" Content="{Binding CleanName}" VerticalAlignment="Top"></Label>
+		<Label Grid.Row="1" Grid.Column="1" Content="{Binding TotalLikeFiles}" VerticalAlignment="Top"></Label>
 	</Grid>
 </UserControl>

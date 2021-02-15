@@ -10,7 +10,7 @@ namespace Embroidery.Client.ViewModels
 {
     class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel(ObservableCollection<Models.File> files)
+        public MainWindowViewModel(ObservableCollection<Models.View.GroupedFile> files)
         {
             
             List = new TodoListViewModel(files);

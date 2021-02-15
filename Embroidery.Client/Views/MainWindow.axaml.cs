@@ -29,16 +29,12 @@ namespace Embroidery.Client.Views
         /// <param name="e"></param>
         protected override void OnDataContextChanged(System.EventArgs e)
         {
-            base.OnDataContextChanged(e);
-
-           
+            base.OnDataContextChanged(e);           
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            base.OnClosing(e);
-
-            
+            base.OnClosing(e);          
         }
     }
 }

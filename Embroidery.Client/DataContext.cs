@@ -27,6 +27,14 @@ namespace Embroidery.Client
             options.UseSqlite(dataSource);
 
             System.Console.WriteLine($"Using DS:{dataSource}");
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Models.View.GroupedFile>()
+                .ToTable(nameof(Models.View.GroupedFile), t => t.ExcludeFromMigrations())
+                .HasNoKey();
         }
 
         public DbSet<File> Files { get; set; }
@@ -34,5 +42,7 @@ namespace Embroidery.Client
         public DbSet<Tag> Tags { get; set; }
 
         public DbSet<Folder> Folders { get; set; }
+
+        public DbSet<Models.View.GroupedFile> GroupedFiles  {get;set;}
     }
 }

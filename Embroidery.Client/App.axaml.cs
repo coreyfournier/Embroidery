@@ -7,6 +7,7 @@ using Embroidery.Client.Crawler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace Embroidery.Client
 {
@@ -24,13 +25,20 @@ namespace Embroidery.Client
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 var db = new DataContext();
-                ObservableCollection<Models.File> files = new ObservableCollection<Models.File>(
-                    db.Files
-                    .Where(x=> !x.HasError)
-                    .OrderByDescending(x=> x.Id)
-                    .Take(100)
-                    .ToList()
-                    );
+                ObservableCollection<Models.View.GroupedFile> groupedFiles = new ObservableCollection<Models.View.GroupedFile>( 
+                    db.GroupedFiles.FromSqlRaw(@"SELECT 
+	MAX(Files.Id) AS FirstFileId,
+	[CleanName],
+	count(*) AS TotalLikeFiles    
+FROM 
+  [Files]
+WHERE
+  CleanName IS NOT NULL
+  AND Files.HasError = 0  
+GROUP BY 
+	CleanName
+ORDER BY Id DESC"));
+                ObservableCollection<Models.File> files = new ObservableCollection<Models.File>();
 
                 //Start the crawler to look for images
                 Program.Crawler.Run(
@@ -41,7 +49,7 @@ namespace Embroidery.Client
 
                 desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel(files),
+                    DataContext = new MainWindowViewModel(groupedFiles),
                 };
             }
         }
