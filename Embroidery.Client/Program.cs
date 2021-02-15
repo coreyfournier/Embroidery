@@ -9,16 +9,23 @@ namespace Embroidery.Client
 {
     class Program
     {
+        /// <summary>
+        /// I want to know if an ef migration is running or not
+        /// </summary>
+        public static bool IsApplicationExecuting = false;
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         static System.Threading.CancellationTokenSource cancellationToken = new System.Threading.CancellationTokenSource();
-        public static string EmbroideryDirectory = System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\..\SampleData");
+        public static string EmbroideryDirectory = 
+            //@"\\nas.myfournier.com\Public\embroidery designs";
+            System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\..\SampleData");
         public static string UserApplicationFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Embroidery));
         public static string ImageCacheFolder = $"{Program.UserApplicationFolder}\\cache\\images";
         public static Crawler.Execution Crawler =  new Crawler.Execution(cancellationToken);
         public static void Main(string[] args)
-        {            
+        {
+            IsApplicationExecuting = true;
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
 
             if (!System.IO.Directory.Exists(UserApplicationFolder))
@@ -35,15 +42,12 @@ namespace Embroidery.Client
 
             BuildAvaloniaApp()
               .StartWithClassicDesktopLifetime(args);          
-
         }
 
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-            
+        {            
             if (Crawler != null)
-                Crawler.Dispose();
-                 
+                Crawler.Dispose();                 
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.

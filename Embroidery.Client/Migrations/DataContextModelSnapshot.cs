@@ -22,7 +22,15 @@ namespace Embroidery.Client.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CleanName")
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(512)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Extension")
@@ -38,10 +46,16 @@ namespace Embroidery.Client.Migrations
                     b.Property<int>("FolderId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<float>("FontSize")
+                        .HasColumnType("REAL");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(388)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("HasError")
+                        .HasColumnType("INTEGER");
 
                     b.Property<byte[]>("ImageThumbnail")
                         .HasColumnType("BLOB");
@@ -49,8 +63,8 @@ namespace Embroidery.Client.Migrations
                     b.Property<byte?>("Length")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("LikeFileId")
-                        .HasColumnType("INTEGER");
+                    b.Property<char>("Letter")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -68,9 +82,11 @@ namespace Embroidery.Client.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CleanName");
+
                     b.HasIndex("FileHash");
 
-                    b.HasIndex("LikeFileId");
+                    b.HasIndex("HasError");
 
                     b.HasIndex("FolderId", "Name")
                         .IsUnique();
@@ -143,13 +159,7 @@ namespace Embroidery.Client.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Embroidery.Client.Models.File", "LikeFile")
-                        .WithMany()
-                        .HasForeignKey("LikeFileId");
-
                     b.Navigation("Folder");
-
-                    b.Navigation("LikeFile");
                 });
 
             modelBuilder.Entity("Embroidery.Client.Models.Tag", b =>

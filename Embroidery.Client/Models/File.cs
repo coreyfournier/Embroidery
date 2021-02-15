@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace Embroidery.Client.Models
 {
-    [Index(nameof(FolderId), nameof(Name), IsUnique = true), Index(nameof(FileHash), IsUnique = false)]
+    [Index(nameof(FolderId), nameof(Name), IsUnique = true), 
+        Index(nameof(FileHash), IsUnique = false), 
+        Index(nameof(HasError), IsUnique = false),
+        Index(nameof(CleanName), IsUnique = false)]
     public class File
     {
         public File() { }
@@ -24,7 +27,13 @@ namespace Embroidery.Client.Models
             }
 
             CreatedDate = DateTime.Now;
-            ImageThumbnail = System.IO.File.ReadAllBytes(thumbnail);
+            if (System.IO.File.Exists(thumbnail))
+            {
+                ImageThumbnail = System.IO.File.ReadAllBytes(thumbnail);
+                HasError = false;
+            }
+            else
+                HasError = true;
             Name = System.IO.Path.GetFileNameWithoutExtension(fullFilePath);
             FullName = System.IO.Path.GetFileName(fullFilePath);
             //Remove the leading dot
@@ -35,28 +44,24 @@ namespace Embroidery.Client.Models
             UpdatedDate = DateTime.MinValue;
             FolderId = folderId;
 
-            ParseAndSetForLengthAndWidth(Name);
-        }
-
-        /// <summary>
-        /// Look at the file name and try to parse out the size of the file
-        /// </summary>
-        /// <param name="fileName"></param>
-        private void ParseAndSetForLengthAndWidth(string fileName)
-        {
-            var regEx = new System.Text.RegularExpressions.Regex("(([0-9]+)[xX]([0-9]+))");
-
-            var match = regEx.Match(fileName);
-
-            if (match.Success && match.Groups.Count == 4)
+            var attributes = Utilities.FIleNameAttributeParser.ParseAndSetForLengthAndWidth(Name);
+            if (attributes != null)
             {
-                Length = byte.Parse(match.Groups[2].Value);
-                Width = byte.Parse(match.Groups[3].Value);
-            }
-            else
-            {
-                Length = null;
-                Width = null;
+                Length = attributes.Length;
+                Width = attributes.Width;
+                FontSize = attributes.FontSize;
+                Letter = attributes.Letter;
+
+                if (attributes.Position > 0)
+                {
+                    if (attributes.Position < 4)
+                    {
+                        //The information was found at the front of the name
+                        CleanName = Name.Substring(attributes.Position, Name.Length - attributes.Position);
+                    }
+                    else // The information was found at the end
+                        CleanName = Name.Substring(0, attributes.Position);
+                }
             }
         }
 
@@ -108,17 +113,34 @@ namespace Embroidery.Client.Models
         public string FileHash { get; set; }
 
         /// <summary>
-        /// Files come in difference sizes
+        /// The name of the file after font information and or size has been removed.
+        /// This can be used to find file that are similar
         /// </summary>
-        public File LikeFile { get; set; }
-        public int? LikeFileId { get; set; }
+        [MaxLength(128)]
+        public string? CleanName { get; set; }
 
         public byte? Length { get; set; }
         public byte? Width { get; set; }
+
+        /// <summary>
+        /// If it's a font the size of it
+        /// </summary>
+        public Single FontSize { get; set; }
+
+        /// <summary>
+        /// If it's a font what letter it is
+        /// </summary>
+        public char Letter{get;set;}
                 
         public Folder Folder { get; set; }
 
         [Required]
         public int FolderId { get; set; }
+
+        public bool HasError { get; set; }
+
+        [MaxLength(512)]
+        public string? ErrorMessage { get; set; }
+
     }
 }

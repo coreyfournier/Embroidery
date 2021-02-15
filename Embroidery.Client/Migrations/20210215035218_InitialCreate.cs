@@ -36,20 +36,18 @@ namespace Embroidery.Client.Migrations
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     ImageThumbnail = table.Column<byte[]>(type: "BLOB", nullable: true),
                     FileHash = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
-                    LikeFileId = table.Column<int>(type: "INTEGER", nullable: true),
+                    CleanName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
                     Length = table.Column<byte>(type: "INTEGER", nullable: true),
                     Width = table.Column<byte>(type: "INTEGER", nullable: true),
-                    FolderId = table.Column<int>(type: "INTEGER", nullable: false)
+                    FontSize = table.Column<float>(type: "REAL", nullable: false),
+                    Letter = table.Column<char>(type: "TEXT", nullable: false),
+                    FolderId = table.Column<int>(type: "INTEGER", nullable: false),
+                    HasError = table.Column<bool>(type: "INTEGER", nullable: false),
+                    ErrorMessage = table.Column<string>(type: "TEXT", maxLength: 512, nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Files", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Files_Files_LikeFileId",
-                        column: x => x.LikeFileId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Files_Folders_FolderId",
                         column: x => x.FolderId,
@@ -88,6 +86,11 @@ namespace Embroidery.Client.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Files_CleanName",
+                table: "Files",
+                column: "CleanName");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Files_FileHash",
                 table: "Files",
                 column: "FileHash");
@@ -99,9 +102,9 @@ namespace Embroidery.Client.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Files_LikeFileId",
+                name: "IX_Files_HasError",
                 table: "Files",
-                column: "LikeFileId");
+                column: "HasError");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folders_Path",

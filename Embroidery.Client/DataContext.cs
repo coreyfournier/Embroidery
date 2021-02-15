@@ -12,16 +12,21 @@ namespace Embroidery.Client
     {
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-
+            string dataSource = "";
             //This is the actual application
-            if (System.Reflection.Assembly.GetExecutingAssembly().GetName().Name.ToLower() == $"{nameof(Embroidery)}.{nameof(Client)}".ToLower())
+            if (Program.IsApplicationExecuting)
             {
                 var absolute = System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\Embroidery.db");
-                options.UseSqlite($"Data Source={absolute}");
+                dataSource = $"Data Source={absolute}";
             }
             else //This is entity frame work migrations
-                options.UseSqlite(@"Data Source=Embroidery.db");
+            {
+                dataSource = @"Data Source=Embroidery.db";
+            }
 
+            options.UseSqlite(dataSource);
+
+            System.Console.WriteLine($"Using DS:{dataSource}");
         }
 
         public DbSet<File> Files { get; set; }

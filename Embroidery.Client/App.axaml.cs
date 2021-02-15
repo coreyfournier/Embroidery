@@ -26,6 +26,7 @@ namespace Embroidery.Client
                 var db = new DataContext();
                 ObservableCollection<Models.File> files = new ObservableCollection<Models.File>(
                     db.Files
+                    .Where(x=> !x.HasError)
                     .OrderByDescending(x=> x.CreatedDate)
                     .Take(100)
                     .ToList()

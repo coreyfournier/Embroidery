@@ -136,9 +136,6 @@ namespace Embroidery.Client.Crawler
         {
             var targetPath = System.IO.Path.GetDirectoryName(targetFile);
 
-            if (!System.IO.Directory.Exists(targetPath))
-                System.IO.Directory.CreateDirectory(targetPath);
-
             System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
