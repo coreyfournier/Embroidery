@@ -141,7 +141,9 @@ namespace Embroidery.Client.Crawler
             }
             else
             {
-                foundExistingFile.TotalLikeFiles++;
+                fileList.Remove(foundExistingFile);
+                foundExistingFile.TotalLikeFiles += 1;
+                fileList.Add(foundExistingFile);
             }
         }
 

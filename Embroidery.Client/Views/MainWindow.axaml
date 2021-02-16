@@ -15,7 +15,7 @@
 		</Grid.ColumnDefinitions>
 		
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="600" />
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 		
@@ -23,6 +23,8 @@
 		<views:FileDetailView Name="FileDetail" 
 							  Grid.Column="1" Grid.Row="0" 
 							  VerticalContentAlignment="Top" 
-							  HorizontalContentAlignment="Center"></views:FileDetailView>
+							  HorizontalContentAlignment="Center">
+			
+		</views:FileDetailView>
 	</Grid>
 </Window>
