@@ -18,7 +18,7 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		
-		<views:TodoListView Content="{Binding List}"  Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch"></views:TodoListView>
+		<views:FileListView Content="{Binding List}"  Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch"></views:FileListView>
 		<views:FileDetailView Name="FileDetail" 
 							  Grid.Column="1" Grid.Row="0" 
 							  VerticalContentAlignment="Top" 

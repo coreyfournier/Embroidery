@@ -15,4 +15,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
    </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\FileListView.axaml.cs">
+      <DependentUpon>FileListView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

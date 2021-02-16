@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace Embroidery.Client.Views
 {
-    public class TodoListView : UserControl
+    public class FileListView : UserControl
     {
-        public TodoListView()
+        public FileListView()
         {
             InitializeComponent();
         }
@@ -20,6 +20,7 @@ namespace Embroidery.Client.Views
 
         public void RowClicked(object sender, SelectionChangedEventArgs e)
         {
+            //Find the file detail view by name
             var control = this.Parent.Parent.Parent.FindControl<FileDetailView>("FileDetail");
 
             if (e.AddedItems.Count > 0)

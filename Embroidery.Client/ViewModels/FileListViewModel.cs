@@ -4,9 +4,9 @@ using System.Collections.ObjectModel;
 
 namespace Embroidery.Client.ViewModels
 {
-    public class TodoListViewModel : ViewModelBase
+    public class FileListViewModel : ViewModelBase
     {
-        public TodoListViewModel(ObservableCollection<Models.View.GroupedFile> items)
+        public FileListViewModel(ObservableCollection<Models.View.GroupedFile> items)
         {
             Items = items;
         }

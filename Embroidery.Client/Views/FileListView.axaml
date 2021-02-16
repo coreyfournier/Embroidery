@@ -6,7 +6,7 @@
 			 xmlns:utils="clr-namespace:Embroidery.Client.Utilities"
 			 xmlns:models="clr-namespace:Embroidery.Client.Models.View"
 			 xmlns:customViews="clr-namespace:Embroidery.Client.Views"
-             x:Class="Embroidery.Client.Views.TodoListView">
+             x:Class="Embroidery.Client.Views.FileListView">
 	<UserControl.Resources>
 		<utils:BitmapConverter x:Key="bitMapFromDb"/>
 	</UserControl.Resources>
