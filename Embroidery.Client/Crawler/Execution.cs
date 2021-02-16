@@ -26,7 +26,7 @@ namespace Embroidery.Client.Crawler
         /// <param name="tempFolder"></param>
         /// <param name="fileList">List to observe changes to</param>
         /// <exception cref="System.IO.DirectoryNotFoundException"></exception>
-        public void Run(string pathToSearch, string tempFolder, ObservableCollection<Models.File> fileList)
+        public void Run(string pathToSearch, string tempFolder, ObservableCollection<Models.View.GroupedFile> fileList)
         {
             if (!System.IO.Directory.Exists(pathToSearch))
                 throw new System.IO.DirectoryNotFoundException($"The path to search ({pathToSearch}) was not found");
@@ -115,7 +115,7 @@ namespace Embroidery.Client.Crawler
                             System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
                             db.SaveChanges();
 
-                            fileList.Add(newFile);
+                            AddFileToList(fileList, newFile);
                         }
                     });
                 }
@@ -124,6 +124,25 @@ namespace Embroidery.Client.Crawler
 
 
             task.Start();
+        }
+
+        private void AddFileToList(ObservableCollection<Models.View.GroupedFile> fileList, Models.File newFile)
+        {
+            var foundExistingFile = fileList.FirstOrDefault(x => x.CleanName == newFile.CleanName);
+
+            if (foundExistingFile == null)
+            {
+                fileList.Add(new Models.View.GroupedFile()
+                {
+                    CleanName = newFile.DisplayName,
+                    FirstFileId = newFile.Id,
+                    TotalLikeFiles = 1
+                });
+            }
+            else
+            {
+                foundExistingFile.TotalLikeFiles++;
+            }
         }
 
         /// <summary>

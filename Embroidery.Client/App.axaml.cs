@@ -38,13 +38,13 @@ WHERE
 GROUP BY 
 	CleanName
 ORDER BY Id DESC"));
-                ObservableCollection<Models.File> files = new ObservableCollection<Models.File>();
+                
 
                 //Start the crawler to look for images
                 Program.Crawler.Run(
                     Program.EmbroideryDirectory,
                     System.IO.Path.Combine(Program.UserApplicationFolder, "temp"),
-                    files);
+                    groupedFiles);
 
 
                 desktop.MainWindow = new MainWindow
