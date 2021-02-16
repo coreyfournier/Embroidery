@@ -3,26 +3,31 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="350"
-		Width="800" Height="600"
+		Width="900" Height="600"
         x:Class="Embroidery.Client.Views.MainWindow"
 		xmlns:views="clr-namespace:Embroidery.Client.Views"
-        Title="Embroidery Client">
+        Title="Stitch Sort">
 	
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="400"  />
-			<ColumnDefinition Width="Auto"/>			
+			<ColumnDefinition Width="300"  />
+			<ColumnDefinition Width="*"/>			
 		</Grid.ColumnDefinitions>
 		
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		
 		<views:FileListView Content="{Binding List}"  Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch"></views:FileListView>
-		<views:FileDetailView Name="FileDetail" 
-							  Grid.Column="1" Grid.Row="0" 
-							  VerticalContentAlignment="Top" 
-							  HorizontalContentAlignment="Center">			
+		
+		<views:FileDetailView Name="FileDetail" 							  
+							  Grid.Row="0" 
+							  Grid.Column="1" 
+							  VerticalAlignment="Stretch"
+							  HorizontalAlignment="Stretch"
+							  VerticalContentAlignment="Stretch" 
+							  HorizontalContentAlignment="Stretch"
+							  >			
 		</views:FileDetailView>
 	</Grid>
 </Window>

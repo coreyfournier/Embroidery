@@ -1,6 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Embroidery.Client.Models.View;
+
+using System.Collections.ObjectModel;
 
 namespace Embroidery.Client.Views
 {
@@ -9,13 +12,6 @@ namespace Embroidery.Client.Views
         public FileDetailView()
         {
             InitializeComponent();
-            this.DataContextChanged += FileDetailView_DataContextChanged;
-            
-        }
-
-        private void FileDetailView_DataContextChanged(object? sender, System.EventArgs e)
-        {
-            
         }
 
         private void InitializeComponent()

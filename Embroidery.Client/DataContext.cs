@@ -13,6 +13,7 @@ namespace Embroidery.Client
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             string dataSource = "";
+
             //This is the actual application
             if (Program.IsApplicationExecuting)
             {
@@ -35,6 +36,10 @@ namespace Embroidery.Client
             modelBuilder.Entity<Models.View.GroupedFile>()
                 .ToTable(nameof(Models.View.GroupedFile), t => t.ExcludeFromMigrations())
                 .HasNoKey();
+
+            modelBuilder.Entity<Models.View.SimpleFile>()
+                .ToTable(nameof(Models.View.SimpleFile), t => t.ExcludeFromMigrations())
+                .HasNoKey();
         }
 
         public DbSet<File> Files { get; set; }
@@ -44,5 +49,7 @@ namespace Embroidery.Client
         public DbSet<Folder> Folders { get; set; }
 
         public DbSet<Models.View.GroupedFile> GroupedFiles  {get;set;}
+
+        public DbSet<Models.View.SimpleFile> SimpleFiles { get; set; }
     }
 }

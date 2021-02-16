@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
 using Avalonia.Markup.Xaml;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace Embroidery.Client.Views
@@ -26,11 +27,38 @@ namespace Embroidery.Client.Views
             if (e.AddedItems.Count > 0)
             {
                 var groupedFile = e.AddedItems[0] as Models.View.GroupedFile;
-                control.DataContext = groupedFile;
 
-                if(groupedFile != null)
+                if (groupedFile != null)
+                {
+
+                    using (var db = new DataContext())
+                    {
+                        var simpleFiles = db.SimpleFiles
+                            .FromSqlInterpolated(@$"SELECT 
+	                            Files.[Id],
+	                            [Name],
+	                            [Extension],
+	                            [FullName],
+	                            [SizeInKb],
+	                            Path,
+	                            Files.[CreatedDate],
+	                            Files.[UpdatedDate]	
+                            FROM 
+	                            [Files]
+                            INNER JOIN Folders ON Folders.Id = FolderId
+
+                            WHERE
+	                            CleanName = {groupedFile.CleanName}");
+
+                        control.DataContext = new Models.View.FileDetail()
+                        {
+                            GroupedFile = groupedFile,
+                            SimpleFiles = simpleFiles.ToArray()
+                        };
+                    }
                     System.Diagnostics.Debug.WriteLine($"Clicked {groupedFile.CleanName}");
-            }            
+                }
+            }      
         }
     }
 }

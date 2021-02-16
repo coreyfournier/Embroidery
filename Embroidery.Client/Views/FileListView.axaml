@@ -3,18 +3,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="100" d:DesignHeight="300"
-			 xmlns:utils="clr-namespace:Embroidery.Client.Utilities"
 			 xmlns:models="clr-namespace:Embroidery.Client.Models.View"
 			 xmlns:customViews="clr-namespace:Embroidery.Client.Views"
              x:Class="Embroidery.Client.Views.FileListView">
-	<UserControl.Resources>
-		<utils:BitmapConverter x:Key="bitMapFromDb"/>
-	</UserControl.Resources>
-		<ListBox Items="{Binding Items}" SelectionChanged="RowClicked" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate DataType="{x:Type models:GroupedFile}">
-						<customViews:FileView></customViews:FileView>					
-					</DataTemplate>					
-				</ItemsControl.ItemTemplate>			
+	
+	<ListBox Items="{Binding Items}" SelectionChanged="RowClicked" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+		<ItemsControl.ItemTemplate>
+			<DataTemplate DataType="{x:Type models:GroupedFile}">
+				<customViews:FileView></customViews:FileView>					
+			</DataTemplate>					
+		</ItemsControl.ItemTemplate>			
 	</ListBox>
 </UserControl>
