@@ -15,14 +15,18 @@
 
 		<Grid.RowDefinitions>
 			<RowDefinition Height="350" />
-			<RowDefinition Height="Auto" MinHeight="300" />
+			<RowDefinition Height="*"/>
 		</Grid.RowDefinitions>
-		<Image Grid.Column="0" Grid.Row="0" 
+		<Image Name="FileImage" Grid.Column="0" Grid.Row="0" 
 			   Source="{Binding GroupedFile, Converter={StaticResource bitMapFromDb}}"  
 			   Height="350" Width="350" 
 			   HorizontalAlignment="Stretch" 
 			   VerticalAlignment="Stretch"/>
-		<DataGrid Name="RelatedFilesDataGrid" Items="{Binding SimpleFiles}" Grid.Column="0" Grid.Row="1" 
+		<DataGrid Name="RelatedFilesDataGrid" Grid.Column="0" Grid.Row="1"
+				  Items="{Binding SimpleFiles}"
+				  SelectionChanged="DataGridSelectionChanged"
+				  DoubleTapped="DataGridDoubleTap"
+		 		  IsReadOnly="True"
 				  AutoGenerateColumns="True"  
 				  HorizontalAlignment="Stretch" 
 				  VerticalAlignment="Stretch"/>

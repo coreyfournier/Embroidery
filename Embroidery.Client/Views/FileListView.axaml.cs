@@ -30,19 +30,13 @@ namespace Embroidery.Client.Views
 
                 if (groupedFile != null)
                 {
-
                     using (var db = new DataContext())
                     {
                         var simpleFiles = db.SimpleFiles
                             .FromSqlInterpolated(@$"SELECT 
-	                            Files.[Id],
-	                            [Name],
-	                            [Extension],
+                                Files.Id,
 	                            [FullName],
-	                            [SizeInKb],
-	                            Path,
-	                            Files.[CreatedDate],
-	                            Files.[UpdatedDate]	
+	                            Path
                             FROM 
 	                            [Files]
                             INNER JOIN Folders ON Folders.Id = FolderId

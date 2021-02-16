@@ -48,7 +48,13 @@ namespace Embroidery.Client.Utilities
             return null;
         }
 
-        private Bitmap DbImageToBmpFile(int fileId, byte[] jpgFile)
+        /// <summary>
+        /// Saves the jpg image to the cache folder and displayes from there
+        /// </summary>
+        /// <param name="fileId"></param>
+        /// <param name="jpgFile"></param>
+        /// <returns></returns>
+        public static Bitmap DbImageToBmpFile(int fileId, byte[] jpgFile)
         {
             var bmpFileName = $"{Program.ImageCacheFolder}\\{fileId}.bmp";
 
@@ -93,7 +99,7 @@ namespace Embroidery.Client.Utilities
             return new Bitmap(bmpFileName);
         }
 
-        private ImageCodecInfo GetEncoder(ImageFormat format)
+        private static ImageCodecInfo GetEncoder(ImageFormat format)
         {
             ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
             foreach (ImageCodecInfo codec in codecs)
