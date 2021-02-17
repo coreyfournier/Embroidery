@@ -10,18 +10,20 @@
 	
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="300"  />
+			<ColumnDefinition Width="300"/>
 			<ColumnDefinition Width="*"/>			
 		</Grid.ColumnDefinitions>
 		
 		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
 			<RowDefinition Height="*" />
+			<RowDefinition Height="60" />
 		</Grid.RowDefinitions>
-		
-		<views:FileListView Content="{Binding List}"  Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch"></views:FileListView>
+		<TextBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Watermark="Search" KeyUp="SearchTextKeyUp"/>
+		<views:FileListView Name="FileListView" Content="{Binding List}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch"></views:FileListView>
 		
 		<views:FileDetailView Name="FileDetail" 							  
-							  Grid.Row="0" 
+							  Grid.Row="1" 
 							  Grid.Column="1" 
 							  VerticalAlignment="Stretch"
 							  HorizontalAlignment="Stretch"
@@ -29,5 +31,6 @@
 							  HorizontalContentAlignment="Stretch"
 							  >			
 		</views:FileDetailView>
+		<TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"  IsReadOnly="True"/>
 	</Grid>
 </Window>

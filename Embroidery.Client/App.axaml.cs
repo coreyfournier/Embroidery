@@ -25,8 +25,9 @@ namespace Embroidery.Client
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 var db = new DataContext();
-                ObservableCollection<Models.View.GroupedFile> groupedFiles = new ObservableCollection<Models.View.GroupedFile>( 
-                    db.GroupedFiles.FromSqlRaw(@"SELECT 
+                ObservableCollection<Models.View.GroupedFile> groupedFiles = new ObservableCollection<Models.View.GroupedFile>(
+                    db.GroupedFiles
+                    .FromSqlRaw(@"SELECT 
 	MAX(Files.Id) AS FirstFileId,
 	[CleanName],
 	count(*) AS TotalLikeFiles    
@@ -37,8 +38,7 @@ WHERE
   AND Files.HasError = 0  
 GROUP BY 
 	CleanName
-ORDER BY Id DESC"));
-                
+ORDER BY Id DESC")); 
 
                 //Start the crawler to look for images
                 Program.Crawler.Run(

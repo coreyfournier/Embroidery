@@ -40,7 +40,6 @@ namespace Embroidery.Client.Views
                             FROM 
 	                            [Files]
                             INNER JOIN Folders ON Folders.Id = FolderId
-
                             WHERE
 	                            CleanName = {groupedFile.CleanName}");
 
