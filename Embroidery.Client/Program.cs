@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-
+using Avalonia.ReactiveUI;
 using System;
 using System.IO;
 
@@ -22,7 +22,7 @@ namespace Embroidery.Client
             //System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\..\SampleData");
         public static string UserApplicationFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Embroidery));
         public static string ImageCacheFolder = $"{Program.UserApplicationFolder}\\cache\\images";
-        public static IO.Execution Crawler =  new IO.Execution(cancellationToken);
+        public static IO.Execution Crawler = new IO.Execution();
         public static void Main(string[] args)
         {
             IsApplicationExecuting = true;
@@ -47,13 +47,14 @@ namespace Embroidery.Client
         static void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {            
             if (Crawler != null)
-                Crawler.Dispose();                 
+                Crawler.Stop();                 
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
+                .UseReactiveUI()
                 .LogToTrace()
             ;
     }

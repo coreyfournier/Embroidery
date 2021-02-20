@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Embroidery.Client.Models;
+using Embroidery.Client.Utilities;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 using System;
@@ -26,13 +27,39 @@ namespace Embroidery.Client.ViewModels
         private bool _searchIsExecuting = false;
         
         //public static readonly AvaloniaProperty GettingStartedReactive = AvaloniaProperty.Register<MainWindowViewModel, string>("GettingStarted");
-        public MainWindowViewModel()
+        public MainWindowViewModel(StyleManager styles)
         {
             DisplayStatus = "";
             //DisplayStatus = "";
             groupedFiles = new ObservableCollection<Models.View.GroupedFile>();
-            FileList = new FileListViewModel(groupedFiles);            
+            FileList = new FileListViewModel(groupedFiles);
+            StopCrawler = ReactiveCommand.Create(() => {
+                Program.Crawler.Stop();
+            });
+
+            StartCrawler = ReactiveCommand.Create(() => {
+                Program.Crawler.Run(
+                    Program.EmbroideryDirectory,
+                    System.IO.Path.Combine(Program.UserApplicationFolder, "temp"),
+                    this);
+            });
+
+            // Each time a user clicks 'Switch theme', we load next theme. See 'StyleManager.cs'.
+            ChangeTheme = ReactiveCommand.Create(() => styles.UseTheme(styles.CurrentTheme switch
+            {
+                StyleManager.Theme.Citrus => StyleManager.Theme.Sea,
+                StyleManager.Theme.Sea => StyleManager.Theme.Rust,
+                StyleManager.Theme.Rust => StyleManager.Theme.Candy,
+                StyleManager.Theme.Candy => StyleManager.Theme.Magma,
+                StyleManager.Theme.Magma => StyleManager.Theme.Citrus,
+                _ => throw new ArgumentOutOfRangeException(nameof(styles.CurrentTheme))
+            }));
         }
+        public ReactiveCommand<Unit, Unit> StopCrawler { get; }
+
+        public ReactiveCommand<Unit, Unit> StartCrawler { get; }
+
+        public ReactiveCommand<Unit, Unit> ChangeTheme { get; }
 
         public string DisplayStatus { 
             get 

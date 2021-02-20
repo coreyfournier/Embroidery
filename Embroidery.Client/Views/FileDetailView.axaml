@@ -8,27 +8,28 @@
 	<UserControl.Resources>
 		<utils:BitmapConverter x:Key="bitMapFromDb"/>
 	</UserControl.Resources>
-	<Grid>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-		</Grid.ColumnDefinitions>
+	
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="400" />
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
-		<Image Name="FileImage" Grid.Column="0" Grid.Row="0" 
-			   Source="{Binding GroupedFile, Converter={StaticResource bitMapFromDb}}"  
-			   Height="350" Width="350" 
-			   HorizontalAlignment="Stretch" 
-			   VerticalAlignment="Stretch"/>
-		<DataGrid Name="RelatedFilesDataGrid" Grid.Column="0" Grid.Row="1"
-				  Items="{Binding SimpleFiles}"
-				  SelectionChanged="DataGridSelectionChanged"
-				  DoubleTapped="DataGridDoubleTap"
-		 		  IsReadOnly="True"
-				  AutoGenerateColumns="True"  
-				  HorizontalAlignment="Stretch" 
-				  VerticalAlignment="Stretch"/>
-	</Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="400" />
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Image Name="FileImage" Grid.Column="0" Grid.Row="0"
+				   Source="{Binding GroupedFile, Converter={StaticResource bitMapFromDb}}"
+				   Height="350" Width="350"
+				   HorizontalAlignment="Stretch"
+				   VerticalAlignment="Stretch"/>
+			<DataGrid Name="RelatedFilesDataGrid" Grid.Column="0" Grid.Row="1"
+					  Items="{Binding SimpleFiles}"
+					  SelectionChanged="DataGridSelectionChanged"
+					  DoubleTapped="DataGridDoubleTap"
+		 			  IsReadOnly="True"
+					  AutoGenerateColumns="True"
+					  HorizontalAlignment="Stretch"
+					  VerticalAlignment="Stretch"/>
+		</Grid>
 </UserControl>

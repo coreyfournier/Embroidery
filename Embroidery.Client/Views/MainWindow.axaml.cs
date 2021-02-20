@@ -93,6 +93,6 @@ namespace Embroidery.Client.Views
                     System.Diagnostics.Debug.WriteLine($"Clicked {groupedFile.CleanName}");
                 }
             }
-        }
+        }        
     }
 }

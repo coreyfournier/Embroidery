@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
+using Embroidery.Client.Utilities;
 
 namespace Embroidery.Client
 {
@@ -24,20 +25,10 @@ namespace Embroidery.Client
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var mainWindowView = new MainWindowViewModel();
+                var mainWindow = new MainWindow();
 
-                
-                desktop.MainWindow = new MainWindow()
-                {
-                    DataContext = mainWindowView
-                };
-
-
-                //Start the crawler to look for images
-                Program.Crawler.Run(
-                    Program.EmbroideryDirectory,
-                    System.IO.Path.Combine(Program.UserApplicationFolder, "temp"),
-                    mainWindowView);
+                mainWindow.DataContext = new MainWindowViewModel(new StyleManager(mainWindow));
+                desktop.MainWindow = mainWindow;
             }
         }
     }

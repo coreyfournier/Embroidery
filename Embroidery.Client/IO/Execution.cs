@@ -11,9 +11,11 @@ namespace Embroidery.Client.IO
     public class Execution : IDisposable
     {
         private System.Threading.CancellationTokenSource _cancellationToken;
-        public Execution(System.Threading.CancellationTokenSource cancellationToken)
+        private bool _isRunning = false;
+        private object _executionLocker = new object();
+        public Execution()
         {
-            _cancellationToken = cancellationToken;
+            
         }
 
         /// <summary>
@@ -29,10 +31,28 @@ namespace Embroidery.Client.IO
                 throw new System.IO.DirectoryNotFoundException($"The path to search ({pathToSearch}) was not found");
 
             if (!System.IO.Directory.Exists(tempFolder))
-                System.IO.Directory.CreateDirectory(tempFolder);
+                System.IO.Directory.CreateDirectory(tempFolder);            
 
-            var token = _cancellationToken.Token;
             var task = new Task(() => {
+                if (_isRunning)
+                    return;
+                else
+                {
+                    lock (_executionLocker)
+                    {
+                        if (_isRunning)
+                            return;
+                        else
+                        {
+                            _isRunning = true;
+                            _cancellationToken = new System.Threading.CancellationTokenSource();
+                            System.Diagnostics.Debug.WriteLine("Starting Crawler");
+                        }
+                    }
+                }
+
+                var token = _cancellationToken.Token;
+
                 using (var db = new DataContext())
                 {
                     Dictionary<string, int> tagNameLookup = new Dictionary<string, int>();
@@ -50,7 +70,9 @@ namespace Embroidery.Client.IO
                         var fileNameNoExtension = System.IO.Path.GetFileNameWithoutExtension(foundFile);
                         var filePath = System.IO.Directory.GetParent(foundFile).FullName;
 
-                        
+                        if (token.IsCancellationRequested)
+                            return;
+
                         if (folderLookup.ContainsKey(filePath) && db.Files.Any(x => x.Name == fileNameNoExtension && x.FolderId == folderLookup[filePath]))
                         {
                             System.Diagnostics.Debug.WriteLine($"Already indexed {foundFile}");
@@ -68,7 +90,6 @@ namespace Embroidery.Client.IO
                                 fileHandler.StatusChange($"Working on {foundFile}");
 
                             System.Diagnostics.Debug.WriteLine($"Working on {foundFile}");
-
 
                             PesToTargetFile(foundFile, imageFile);
 
@@ -137,7 +158,7 @@ namespace Embroidery.Client.IO
                     });
                 }
 
-            }, token);
+            });
 
 
             task.Start();
@@ -252,9 +273,21 @@ namespace Embroidery.Client.IO
                 Refresh(folder, fileFound);
         }
 
+        /// <summary>
+        /// Stops the crawler execution
+        /// </summary>
+        public void Stop() 
+        {
+            System.Diagnostics.Debug.WriteLine("Stopping crawler");
+            if (_cancellationToken != null)
+                _cancellationToken.Cancel();
+            
+            _isRunning = false;
+        }
+
         public void Dispose()
         {
-            _cancellationToken.Cancel();
+            Stop();
         }       
     }
 }
