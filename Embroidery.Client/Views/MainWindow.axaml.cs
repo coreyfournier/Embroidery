@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
 using Avalonia.Markup.Xaml;
 using System.ComponentModel;
-using Embroidery.Client.Crawler;
+using Embroidery.Client.IO;
 using Avalonia.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace Embroidery.Client.Views
     public class MainWindow : Window
     {
         ObservableCollection<Models.View.GroupedFile> observableCollection = new ObservableCollection<Models.View.GroupedFile>();
+        string searchText = "";
         public MainWindow()
         {
             InitializeComponent();
@@ -46,12 +47,15 @@ namespace Embroidery.Client.Views
         { 
             var textBox = sender as TextBox;
             var viewModel = this.DataContext as ViewModels.MainWindowViewModel;
-
+            
             if (textBox != null && viewModel != null)
             {
-                viewModel.ExecuteSearch(textBox.Text);
-
-                System.Diagnostics.Debug.WriteLine($"{textBox.Text}");
+                //Make sure there is a material change
+                if (searchText != textBox.Text)
+                {
+                    viewModel.ExecuteSearch(textBox.Text);
+                    searchText = textBox.Text;
+                }
             }
         }
 

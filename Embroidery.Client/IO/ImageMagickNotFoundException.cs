@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Embroidery.Client.Crawler
+namespace Embroidery.Client.IO
 {
     public class ImageMagickNotFoundException : Exception
     {

@@ -20,7 +20,7 @@
 			<RowDefinition Height="60" />
 		</Grid.RowDefinitions>
 		<TextBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Watermark="Search" KeyUp="SearchTextKeyUp"/>
-		<views:FileListView Name="FileListView" Content="{Binding List}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch"></views:FileListView>
+		<views:FileListView Name="FileListView" Content="{Binding FileList}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch"></views:FileListView>
 		
 		<views:FileDetailView Name="FileDetail" 							  
 							  Grid.Row="1" 
@@ -31,6 +31,6 @@
 							  HorizontalContentAlignment="Stretch"
 							  >			
 		</views:FileDetailView>
-		<TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"  IsReadOnly="True"/>
+		<TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"   Text="{Binding DisplayStatus, Mode=TwoWay}"/>
 	</Grid>
 </Window>

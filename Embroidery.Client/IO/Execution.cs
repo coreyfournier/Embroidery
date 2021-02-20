@@ -2,14 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Embroidery.Client.Crawler
+namespace Embroidery.Client.IO
 {
     public class Execution : IDisposable
     {
@@ -24,9 +21,9 @@ namespace Embroidery.Client.Crawler
         /// </summary>
         /// <param name="pathToSearch"></param>
         /// <param name="tempFolder"></param>
-        /// <param name="fileList">List to observe changes to</param>
+        /// <param name="fileHandler"></param>
         /// <exception cref="System.IO.DirectoryNotFoundException"></exception>
-        public void Run(string pathToSearch, string tempFolder, ObservableCollection<Models.View.GroupedFile> fileList)
+        public void Run(string pathToSearch, string tempFolder, IFileFound fileHandler)
         {
             if (!System.IO.Directory.Exists(pathToSearch))
                 throw new System.IO.DirectoryNotFoundException($"The path to search ({pathToSearch}) was not found");
@@ -59,15 +56,24 @@ namespace Embroidery.Client.Crawler
                             System.Diagnostics.Debug.WriteLine($"Already indexed {foundFile}");
                             //Anything to update?
                             //Will need to check the file for changes
+                            if(fileHandler != null)
+                                fileHandler.StatusChange($"Already indexed {foundFile}");
                         }
                         else
                         {
                             var imageFile = System.IO.Path.Combine(tempFolder, Guid.NewGuid() + ".jpg");
                             List<Tag> fileTags = new List<Tag>();
 
+                            if (fileHandler != null)
+                                fileHandler.StatusChange($"Working on {foundFile}");
+
                             System.Diagnostics.Debug.WriteLine($"Working on {foundFile}");
 
+
                             PesToTargetFile(foundFile, imageFile);
+
+                            if (fileHandler != null)
+                                fileHandler.StatusChange($"Converted {foundFile} to jpg");
 
                             var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(foundFile));
 
@@ -91,12 +97,18 @@ namespace Embroidery.Client.Crawler
                                 }
                             }
 
+                            if (fileHandler != null)
+                                fileHandler.StatusChange($"Done finding tags");
+
                             if (token.IsCancellationRequested)
                                 return;
 
                             //If the folder doesn't exists, then add it and then to the lookup
                             if (!folderLookup.ContainsKey(filePath))
                             {
+                                if (fileHandler != null)
+                                    fileHandler.StatusChange($"Found new folder {filePath}");
+
                                 var newFolder = new Folder()
                                 {
                                     Path = filePath,
@@ -106,16 +118,21 @@ namespace Embroidery.Client.Crawler
                                 db.SaveChanges();
 
                                 folderLookup.Add(filePath, newFolder.Id);
-                                System.Diagnostics.Debug.WriteLine($"Found folder {filePath}");
+                                System.Diagnostics.Debug.WriteLine($"Found folder {filePath}");                                
                             }
                             var newFile = new Models.File(imageFile, foundFile, folderLookup[filePath]);
                             db.Files.Add(newFile);
 
+                            if (fileHandler != null)
+                                fileHandler.StatusChange($"Saving....");
+
                             System.IO.File.Delete(imageFile);
                             System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
                             db.SaveChanges();
-
-                            AddFileToList(fileList, newFile);
+                            
+                            if (fileHandler != null)
+                                fileHandler.NewFileInDatabase(newFile);
+                            //AddFileToList(fileList, newFile);
                         }
                     });
                 }
