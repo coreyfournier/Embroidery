@@ -26,6 +26,7 @@
 				<MenuItem Header="Start" IsEnabled="True" Command="{Binding StartCrawler}"/>
 				<MenuItem Header="Stop" IsEnabled="True" Command="{Binding StopCrawler}" />				
 			</MenuItem>
+			<!--
 			<MenuItem Header="Menu option number two">
 				<MenuItem Header="With items">
 					<MenuItem Header="First item" />
@@ -33,6 +34,7 @@
 				</MenuItem>
 				<MenuItem Header="Enabled" IsEnabled="True" />
 			</MenuItem>
+			-->
 			<MenuItem Header="Switch theme" Command="{Binding ChangeTheme}" />
 		</Menu>
 		
