@@ -51,5 +51,7 @@ namespace Embroidery.Client
         public DbSet<Models.View.GroupedFile> GroupedFiles  {get;set;}
 
         public DbSet<Models.View.SimpleFile> SimpleFiles { get; set; }
+
+        public DbSet<Setting> Settings { get; set; }
     }
 }

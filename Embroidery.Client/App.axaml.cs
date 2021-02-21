@@ -27,7 +27,9 @@ namespace Embroidery.Client
             {
                 var mainWindow = new MainWindow();
 
-                mainWindow.DataContext = new MainWindowViewModel(new StyleManager(mainWindow));
+                mainWindow.DataContext = new MainWindowViewModel(
+                    mainWindow, 
+                    new StyleManager(mainWindow));
                 desktop.MainWindow = mainWindow;
             }
         }

@@ -25,12 +25,13 @@ namespace Embroidery.Client.ViewModels
         string _displayStatus = "";
         private object _searchLocker = new object();
         private bool _searchIsExecuting = false;
-        
+        Avalonia.Controls.Window _mainWindow;
+
         //public static readonly AvaloniaProperty GettingStartedReactive = AvaloniaProperty.Register<MainWindowViewModel, string>("GettingStarted");
-        public MainWindowViewModel(StyleManager styles)
+        public MainWindowViewModel(Avalonia.Controls.Window mainWindow, StyleManager styles)
         {
             DisplayStatus = "";
-            //DisplayStatus = "";
+            _mainWindow = mainWindow;
             groupedFiles = new ObservableCollection<Models.View.GroupedFile>();
             FileList = new FileListViewModel(groupedFiles);
             StopCrawler = ReactiveCommand.Create(() => {
@@ -54,12 +55,18 @@ namespace Embroidery.Client.ViewModels
                 StyleManager.Theme.Magma => StyleManager.Theme.Citrus,
                 _ => throw new ArgumentOutOfRangeException(nameof(styles.CurrentTheme))
             }));
+
+            ShowSettings = ReactiveCommand.Create(() => {
+                Views.SettingsDialog dialog = new Views.SettingsDialog();
+                dialog.ShowDialog(_mainWindow);
+            });
         }
         public ReactiveCommand<Unit, Unit> StopCrawler { get; }
 
         public ReactiveCommand<Unit, Unit> StartCrawler { get; }
 
         public ReactiveCommand<Unit, Unit> ChangeTheme { get; }
+        public ReactiveCommand<Unit, Unit> ShowSettings { get; }
 
         public string DisplayStatus { 
             get 

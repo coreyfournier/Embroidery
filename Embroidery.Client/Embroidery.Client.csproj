@@ -22,5 +22,8 @@
     <Compile Update="Views\FileListView.axaml.cs">
       <DependentUpon>FileListView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\SettingsDialog.axaml.cs">
+      <DependentUpon>SettingsDialog.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
