@@ -57,7 +57,8 @@ namespace Embroidery.Client.ViewModels
             }));
 
             ShowSettings = ReactiveCommand.Create(() => {
-                Views.SettingsDialog dialog = new Views.SettingsDialog();
+                Views.SettingsDialogView dialog = new Views.SettingsDialogView();
+                dialog.DataContext = new SettingsDialogViewModel(dialog);
                 dialog.ShowDialog(_mainWindow);
             });
         }
@@ -78,8 +79,7 @@ namespace Embroidery.Client.ViewModels
                 _displayStatus = value;
                 RaisePropertyChanged(nameof(DisplayStatus));
             } 
-        }
-        
+        }        
 
         public FileListViewModel FileList { get; }
 

@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+		Height="400" Width="400"
+        x:Class="Embroidery.Client.Views.SettingsDialogView"
+        Title="Settings">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="200"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="0" Grid.Column="0" Content="Folder"/>
+		<TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SearchPath}" Watermark="Choose Folder" IsReadOnly="True"></TextBox>
+
+		<WrapPanel Grid.Row="1" Grid.Column="3">
+			<Button Command="{Binding SaveClick}" Width="75" Margin="2" Content="Save"></Button>
+			<Button Command="{Binding CloseClick}" Width="75" Margin="2" Content="Close"></Button>
+		</WrapPanel>
+	</Grid>
+	
+</Window>

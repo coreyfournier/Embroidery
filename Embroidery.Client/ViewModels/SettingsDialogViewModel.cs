@@ -14,13 +14,15 @@ namespace Embroidery.Client.ViewModels
     {
         private Setting? _searchPath;
         DataContext _db = new DataContext();
+        Avalonia.Controls.Window _dialogWindow;
 
-        public SettingsDialogViewModel() 
+        public SettingsDialogViewModel(Avalonia.Controls.Window dialogWindow) 
         {
-
+            _dialogWindow = dialogWindow;
             SaveClick = ReactiveCommand.Create(SaveSettings);
-           
-           _searchPath = _db.Settings.FirstOrDefault(x=> x.Key == nameof(SearchPath));           
+            CloseClick = ReactiveCommand.Create(CloseSettings);
+
+            _searchPath = _db.Settings.FirstOrDefault(x=> x.Key == nameof(SearchPath));           
         }
 
         public string SearchPath { 
@@ -47,8 +49,17 @@ namespace Embroidery.Client.ViewModels
         private void SaveSettings()
         {
             _db.SaveChanges();
+            _dialogWindow.Close();
+        }
+
+        private void CloseSettings()
+        {
+            _dialogWindow.Close();
+            System.Diagnostics.Debug.WriteLine("Closing");
         }
 
         public ReactiveCommand<Unit, Unit> SaveClick { get; }
+
+        public ReactiveCommand<Unit, Unit> CloseClick { get; }
     }
 }

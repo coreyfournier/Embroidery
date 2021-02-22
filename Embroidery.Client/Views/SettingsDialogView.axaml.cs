@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Embroidery.Client.Views
 {
-    public class SettingsDialog : Window
+    public class SettingsDialogView : Window
     {
-        public SettingsDialog()
+        public SettingsDialogView()
         {
             InitializeComponent();
 #if DEBUG
