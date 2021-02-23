@@ -1,0 +1,20 @@
+Requirements:
+	Requires Image Magick to be installed.
+	Requires 64 bit windows.
+	Windows only for now.
+
+What it can do:
+	*Searches folder and all sub folders for for pes files only.
+	*Creates thumbnails for all pes files and displayes them in the UI.
+	*The name of the file is scanned for size information {number}x{number} or {number}in or {number}inch. This will be later made available to be searched.
+	*When searching, the value is only a contains type of search. Searching for "in" will match "wing" and "inch".
+	*The searched text is limited to the file name, but with the Size information removed.
+	*Files are displayed in the search window by matching the file name with out the size information irregardless of the folder they belong in. 
+
+What it currently can't do:
+	*Identify duplicate files. Future feature
+	*Watch the search folder for changes. Future feature
+	*Identify deleted files. Future feature
+	*Identify updated files. The thumbnail image will show what it looks like when it first encountered the file. Future feature.
+
+
