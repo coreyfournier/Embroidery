@@ -13,6 +13,7 @@ namespace Embroidery.Client.ViewModels
 {
     class SettingsDialogViewModel : ViewModelBase, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
         private Setting? _searchPath;
         DataContext _db = new DataContext();
         Avalonia.Controls.Window _dialogWindow;
@@ -45,23 +46,20 @@ namespace Embroidery.Client.ViewModels
                     }
 
                     _searchPath.Value = value;
+
+                    RaisePropertyChanged(nameof(SearchPath));
                 }
             }
         }
 
-        private void BrowseFolders()
+        private async void BrowseFolders()
         {
             OpenFolderDialog dialog = new OpenFolderDialog();
-            //dialog.Filters.Add(new FileDialogFilter() {   });
 
-            //dialog.AllowMultiple = false;
+            var result = await dialog.ShowAsync(_dialogWindow);
             
-
-            Task<String> task = dialog.ShowAsync(_dialogWindow);
-            
-            task.Wait();
-
-            System.Diagnostics.Debug.WriteLine(task.Result);
+            if(!string.IsNullOrEmpty(result))
+                SearchPath = result;
         }
 
         private void SaveSettings()
@@ -80,5 +78,13 @@ namespace Embroidery.Client.ViewModels
 
         public ReactiveCommand<Unit, Unit> CloseClick { get; }
         public ReactiveCommand<Unit, Unit> BrowseClick { get; }
+
+        public void RaisePropertyChanged(string info)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
     }
 }

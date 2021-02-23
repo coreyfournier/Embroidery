@@ -39,10 +39,25 @@ namespace Embroidery.Client.ViewModels
             });
 
             StartCrawler = ReactiveCommand.Create(() => {
-                Program.Crawler.Run(
-                    Program.EmbroideryDirectory,
-                    System.IO.Path.Combine(Program.UserApplicationFolder, "temp"),
-                    this);
+                Setting searchPathSetting;
+                using (var db = new DataContext())
+                {
+                    searchPathSetting = db.Settings
+                        .Where(x => x.Key == nameof(SettingsDialogViewModel.SearchPath))
+                        .FirstOrDefault();
+                }
+
+                if (searchPathSetting == null)
+                {
+                    DisplayStatus = "Embroidery folder not set. Go to settings and select a folder";
+                }
+                else
+                {
+                    Program.Crawler.Run(
+                        searchPathSetting.Value,
+                        System.IO.Path.Combine(Program.UserApplicationFolder, "temp"),
+                        this);
+                }
             });
 
             // Each time a user clicks 'Switch theme', we load next theme. See 'StyleManager.cs'.

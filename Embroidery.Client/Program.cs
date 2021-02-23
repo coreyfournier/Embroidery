@@ -17,9 +17,6 @@ namespace Embroidery.Client
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         static System.Threading.CancellationTokenSource cancellationToken = new System.Threading.CancellationTokenSource();
-        public static string EmbroideryDirectory = 
-            //@"\\nas.myfournier.com\Public\embroidery designs";
-            System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\..\SampleData");
         public static string UserApplicationFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Embroidery));
         public static string ImageCacheFolder = $"{Program.UserApplicationFolder}\\cache\\images";
         public static IO.Execution Crawler = new IO.Execution();
