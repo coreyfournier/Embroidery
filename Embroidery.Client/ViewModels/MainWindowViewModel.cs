@@ -26,6 +26,7 @@ namespace Embroidery.Client.ViewModels
         private object _searchLocker = new object();
         private bool _searchIsExecuting = false;
         Avalonia.Controls.Window _mainWindow;
+        //static System.Threading.CancellationTokenSource cancellationToken = new System.Threading.CancellationTokenSource();
 
         //public static readonly AvaloniaProperty GettingStartedReactive = AvaloniaProperty.Register<MainWindowViewModel, string>("GettingStarted");
         public MainWindowViewModel(Avalonia.Controls.Window mainWindow, StyleManager styles)
@@ -117,7 +118,7 @@ namespace Embroidery.Client.ViewModels
                     return;
                 _searchIsExecuting = true;
 
-                Task.Delay(500);
+                //Task.Delay(500);
 
                 using (var db = new DataContext())
                 {

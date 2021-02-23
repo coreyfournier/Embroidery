@@ -10,6 +10,7 @@ namespace Embroidery.Client
 {
     public class DataContext : DbContext
     {
+        public const string DbName = "Embroidery.db";
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             string dataSource = "";
@@ -17,12 +18,12 @@ namespace Embroidery.Client
             //This is the actual application
             if (Program.IsApplicationExecuting)
             {
-                var absolute = System.IO.Path.GetFullPath(Environment.CurrentDirectory + @"\..\..\..\Embroidery.db");
+                var absolute = System.IO.Path.Combine(Program.UserApplicationFolder, DbName);
                 dataSource = $"Data Source={absolute}";
             }
             else //This is entity frame work migrations
             {
-                dataSource = @"Data Source=Embroidery.db";
+                dataSource = @$"Data Source={DbName}";
             }
 
             options.UseSqlite(dataSource);

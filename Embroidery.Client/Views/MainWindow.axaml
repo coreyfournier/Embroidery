@@ -34,7 +34,7 @@
 		</Menu>
 		
 		<Border Classes="Card" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Padding="5">
-			<TextBox Watermark="Search" KeyUp="SearchTextKeyUp" />
+			<TextBox Watermark="Search - * for all" KeyUp="SearchTextKeyUp" />
 		</Border>
 		<Border Classes="Card" Grid.Column="0" Grid.Row="2">
 			<views:FileListView Name="FileListView" Content="{Binding FileList}"  VerticalAlignment="Stretch"></views:FileListView>
@@ -49,7 +49,7 @@
 			</views:FileDetailView>
 		</Border>
 		<Border Classes="Card" Padding="5" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
-			<TextBox Text="{Binding DisplayStatus, Mode=TwoWay}"/>
+			<TextBox Text="{Binding DisplayStatus, Mode=TwoWay}" Watermark="Application Information"/>
 		</Border>
 	</Grid>
 </Window>
