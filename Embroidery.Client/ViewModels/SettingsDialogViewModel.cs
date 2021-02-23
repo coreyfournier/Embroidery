@@ -1,4 +1,5 @@
-﻿using Embroidery.Client.Models;
+﻿using Avalonia.Controls;
+using Embroidery.Client.Models;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ namespace Embroidery.Client.ViewModels
             _dialogWindow = dialogWindow;
             SaveClick = ReactiveCommand.Create(SaveSettings);
             CloseClick = ReactiveCommand.Create(CloseSettings);
+
+            BrowseClick = ReactiveCommand.Create(BrowseFolders);
 
             _searchPath = _db.Settings.FirstOrDefault(x=> x.Key == nameof(SearchPath));           
         }
@@ -46,6 +49,21 @@ namespace Embroidery.Client.ViewModels
             }
         }
 
+        private void BrowseFolders()
+        {
+            OpenFolderDialog dialog = new OpenFolderDialog();
+            //dialog.Filters.Add(new FileDialogFilter() {   });
+
+            //dialog.AllowMultiple = false;
+            
+
+            Task<String> task = dialog.ShowAsync(_dialogWindow);
+            
+            task.Wait();
+
+            System.Diagnostics.Debug.WriteLine(task.Result);
+        }
+
         private void SaveSettings()
         {
             _db.SaveChanges();
@@ -61,5 +79,6 @@ namespace Embroidery.Client.ViewModels
         public ReactiveCommand<Unit, Unit> SaveClick { get; }
 
         public ReactiveCommand<Unit, Unit> CloseClick { get; }
+        public ReactiveCommand<Unit, Unit> BrowseClick { get; }
     }
 }
