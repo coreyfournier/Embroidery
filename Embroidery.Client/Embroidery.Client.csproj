@@ -1,9 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <AssemblyName>StitchSort</AssemblyName>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <SelfContained>true</SelfContained>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <PublishTrimmed>true</PublishTrimmed>
+	  <PublishReadyToRun>true</PublishReadyToRun>
+    <Nullable>disable</Nullable>
+    <AssemblyName>StitchSearch</AssemblyName>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>false</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.0" />
@@ -12,7 +25,7 @@
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.0" />
     <PackageReference Include="Citrus.Avalonia" Version="1.4.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0-preview.1.21102.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,4 +39,12 @@
       <DependentUpon>SettingsDialogView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
+
+	<Target Name="BundlePublishDirectory" Condition="'$(PublishSingleFile)' == 'true'" DependsOnTargets="_ComputeFilesToBundle" Inputs="@(_FilesToBundle)" Outputs="$(PublishedSingleFilePath)">
+		<!-- Workaround for https://system.data.sqlite.org/index.html/tktview/ba4a3a4ac5e06a406b98f1cfc5ac517bef2a9f57 -->
+		<ItemGroup>
+			<_FilesToBundleWithoutSqlite Include="@(_FilesToBundle)" Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch('%(Identity)', '.\\native\\netstandard2.0\\SQLite.Interop.dll'))" />
+		</ItemGroup>
+		<GenerateBundle FilesToBundle="@(_FilesToBundleWithoutSqlite)" AppHostName="$(PublishedSingleFileName)" IncludeSymbols="$(IncludeSymbolsInSingleFile)" OutputDir="$(PublishDir)" ShowDiagnosticOutput="false" />
+	</Target>
 </Project>

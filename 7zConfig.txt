@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+Title="SOFTWARE v1.0.0.0"
+BeginPrompt="Do you want to install SOFTWARE v1.0.0.0?"
+RunProgram="setup.exe"
+;!@InstallEnd@!

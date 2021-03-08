@@ -18,3 +18,8 @@ What it currently can't do:
 	*Identify updated files. The thumbnail image will show what it looks like when it first encountered the file. Future feature.
 
 
+
+
+7z
+copy binaries from the lzma sfx  into the 7z program files folder.
+https://www.7-zip.org/sdk.html

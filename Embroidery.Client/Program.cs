@@ -17,7 +17,12 @@ namespace Embroidery.Client
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         static System.Threading.CancellationTokenSource cancellationToken = new System.Threading.CancellationTokenSource();
-        public static string UserApplicationFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), nameof(Embroidery));
+        /// <summary>
+        /// User folder that is used to store the database, temp, and cache storage.
+        /// </summary>
+        public static string UserApplicationFolder = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+            "StitchSearch");
         public static string ImageCacheFolder = $"{Program.UserApplicationFolder}\\cache\\images";
         public static IO.Execution Crawler = new IO.Execution();
         public static void Main(string[] args)
