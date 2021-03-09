@@ -44,7 +44,7 @@ namespace Embroidery.Client.Models
             UpdatedDate = DateTime.MinValue;
             FolderId = folderId;
 
-            var attributes = Utilities.FIleNameAttributeParser.ParseAndSetForLengthAndWidth(Name);
+            var attributes = Utilities.FileNameAttributeParser.ParseAndSetForLengthAndWidth(Name);
             if (attributes != null)
             {
                 Length = attributes.Length;

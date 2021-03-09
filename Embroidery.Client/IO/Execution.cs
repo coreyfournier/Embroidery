@@ -1,4 +1,5 @@
 ﻿using Embroidery.Client.Models;
+using Embroidery.Client.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,10 +20,10 @@ namespace Embroidery.Client.IO
         }
 
         /// <summary>
-        /// 
+        /// Starts the process of crawling a directory for files
         /// </summary>
         /// <param name="pathToSearch"></param>
-        /// <param name="tempFolder"></param>
+        /// <param name="tempFolder">Creates the folder if it doesn't exists.</param>
         /// <param name="fileHandler"></param>
         /// <exception cref="System.IO.DirectoryNotFoundException"></exception>
         public void Run(string pathToSearch, string tempFolder, IFileFound fileHandler)
@@ -75,7 +76,7 @@ namespace Embroidery.Client.IO
 
                         if (folderLookup.ContainsKey(filePath) && db.Files.Any(x => x.Name == fileNameNoExtension && x.FolderId == folderLookup[filePath]))
                         {
-                            System.Diagnostics.Debug.WriteLine($"Already indexed {foundFile}");
+                            //System.Diagnostics.Debug.WriteLine($"Already indexed {foundFile}");
                             //Anything to update?
                             //Will need to check the file for changes
                             if(fileHandler != null)
@@ -89,7 +90,7 @@ namespace Embroidery.Client.IO
                             if (fileHandler != null)
                                 fileHandler.StatusChange($"Working on {foundFile}");
 
-                            System.Diagnostics.Debug.WriteLine($"Working on {foundFile}");
+                            //System.Diagnostics.Debug.WriteLine($"Working on {foundFile}");
 
                             PesToTargetFile(foundFile, imageFile);
 
@@ -139,7 +140,7 @@ namespace Embroidery.Client.IO
                                 db.SaveChanges();
 
                                 folderLookup.Add(filePath, newFolder.Id);
-                                System.Diagnostics.Debug.WriteLine($"Found folder {filePath}");                                
+                                //System.Diagnostics.Debug.WriteLine($"Found folder {filePath}");                                
                             }
                             var newFile = new Models.File(imageFile, foundFile, folderLookup[filePath]);
                             db.Files.Add(newFile);
@@ -148,7 +149,7 @@ namespace Embroidery.Client.IO
                                 fileHandler.StatusChange($"Saving....");
 
                             System.IO.File.Delete(imageFile);
-                            System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
+                            //System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
                             db.SaveChanges();
                             
                             if (fileHandler != null)
@@ -195,7 +196,7 @@ namespace Embroidery.Client.IO
         {
             var targetPath = System.IO.Path.GetDirectoryName(targetFile);
 
-            System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
+            //System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
@@ -228,14 +229,35 @@ namespace Embroidery.Client.IO
             StringBuilder sb = new StringBuilder();
             List<string> list = new List<string>();
 
+            fileName = fileName
+                .Replace('-', ' ')
+                .Replace('_', ' ')
+                .Replace('(', ' ')
+                .Replace(')', ' ')
+                .Replace('.',' ');
+
+            fileName = FileNameAttributeParser.regExNumberUnit.Replace(fileName, " ");
+            fileName = FileNameAttributeParser.regExLxW.Replace(fileName, " ");
+
+            fileName = fileName
+                .Replace("  ", "")
+                .Trim();
+
+            if (string.IsNullOrEmpty(fileName))
+                return new string[] { };
+
             var charArray = fileName.ToCharArray();
+            byte sameLetterCount = 0;
+            char lastLetter =  char.MinValue;
+            System.Diagnostics.Debug.WriteLine($"'{fileName}'");
 
             for (int i = 0; i < charArray.Length; i++)
             {
-                //If it's uppcase then add a space before the word, but not if it's the start
+                
                 if (i != 0)
                 {
-                    if (Char.IsUpper(charArray[i]))
+                    //If the letter is upper case, but don't have a space before the word, then we captured a whole word
+                    if (Char.IsUpper(charArray[i]) && charArray[i-1] != ' ')
                     {
                         list.Add(sb.ToString());
                         sb.Clear();
@@ -248,10 +270,27 @@ namespace Embroidery.Client.IO
                 }
 
                 if (charArray[i] != ' ')
+                {
                     sb.Append(charArray[i]);
-            }
 
-            list.Add(sb.ToString());
+                    if (lastLetter != charArray[i])
+                    {
+                        lastLetter = charArray[i];
+                        sameLetterCount = 1;
+                    }
+                    else
+                        sameLetterCount++;
+                }
+           }
+
+            //Same letter is repeated, only return the single letter
+            if (sb.Length > 0 && sameLetterCount == sb.Length )
+                list.Add(sb.ToString().Substring(0, 1).ToUpper());
+            else
+                list.Add(sb.ToString());
+
+            if (list.Any(x => x == "" || x == " "))
+                System.Diagnostics.Debug.Assert(list.Any(x => x == "" || x == " "));
 
             return list.ToArray();
         }

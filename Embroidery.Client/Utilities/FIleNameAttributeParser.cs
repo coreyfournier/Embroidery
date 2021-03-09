@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace Embroidery.Client.Utilities
 {
-    public class FIleNameAttributeParser
+    public class FileNameAttributeParser
     {
-        private static System.Text.RegularExpressions.Regex regExNumberUnit = new System.Text.RegularExpressions.Regex("(([0-9]+)(in|inch))");
-        private static System.Text.RegularExpressions.Regex regExNumberUnitForFont = new System.Text.RegularExpressions.Regex(@"((\d+|\d\.\d+)(in|inch))");
-        private static System.Text.RegularExpressions.Regex regExLxW = new System.Text.RegularExpressions.Regex("(([0-9]+)[xX]([0-9]+))");
-        private static System.Text.RegularExpressions.Regex regExFontLetter = new System.Text.RegularExpressions.Regex(@"([^a-z^A-Z](\w)[^a-z^A-Z]|[^a-z^A-Z](\w)$)");
-        //
+        public readonly static System.Text.RegularExpressions.Regex regExNumberUnit = new System.Text.RegularExpressions.Regex("(([0-9]+)(inch|in))");
+        public readonly static System.Text.RegularExpressions.Regex regExNumberUnitForFont = new System.Text.RegularExpressions.Regex(@"((\d+|\d\.\d+)(inch|in))");
+        public readonly static System.Text.RegularExpressions.Regex regExLxW = new System.Text.RegularExpressions.Regex("(([0-9]+)[xX]([0-9]+))");
+        public readonly static System.Text.RegularExpressions.Regex regExFontLetter = new System.Text.RegularExpressions.Regex(@"([^a-z^A-Z](\w)[^a-z^A-Z]|[^a-z^A-Z](\w)$)");
 
         /// <summary>
         /// Look at the file name and try to parse out the size of the file
@@ -27,7 +26,7 @@ namespace Embroidery.Client.Utilities
             }
             else
             {
-               info = LxW(fileName);
+                info = LxW(fileName);
 
                 if (info != null)
                     return info;
@@ -36,11 +35,15 @@ namespace Embroidery.Client.Utilities
 
                 if (info != null)
                     return info;
-
             }
             return info;
         }
 
+        /// <summary>
+        /// When specified as a font, this looks for what letter it is.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         private static FileAttribute FontLetter(string fileName)
         {
             var match = regExFontLetter.Match(fileName);
@@ -63,6 +66,11 @@ namespace Embroidery.Client.Utilities
             return info;
         }
 
+        /// <summary>
+        /// Number and then unit
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         private static FileAttribute NumberUnit(string fileName)
         {
             var match = regExNumberUnit.Match(fileName);
@@ -82,6 +90,11 @@ namespace Embroidery.Client.Utilities
             }
         }
 
+        /// <summary>
+        /// Number unit for a font
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         private static FileAttribute NumberUnitForFont(string fileName)
         {
             var match = regExNumberUnitForFont.Match(fileName);
@@ -100,6 +113,11 @@ namespace Embroidery.Client.Utilities
             }
         }
 
+        /// <summary>
+        /// Length x Width
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         private static FileAttribute LxW(string fileName)
         {
             var match = regExLxW.Match(fileName);
