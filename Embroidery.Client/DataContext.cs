@@ -41,8 +41,21 @@ namespace Embroidery.Client
             modelBuilder.Entity<Models.View.SimpleFile>()
                 .ToTable(nameof(Models.View.SimpleFile), t => t.ExcludeFromMigrations())
                 .HasNoKey();
+
+            /*File tag relationship*/
+            modelBuilder.Entity<FileTagRelationship>()
+                .HasKey(bc => new { bc.TagId, bc.FileId });
+            modelBuilder.Entity<FileTagRelationship>()
+                .HasOne(bc => bc.File)
+                .WithMany(b => b.Tags)
+                .HasForeignKey(bc => bc.FileId);
+            modelBuilder.Entity<FileTagRelationship>()
+                .HasOne(bc => bc.Tag)
+                .WithMany(c => c.Files)
+                .HasForeignKey(bc => bc.TagId);
         }
 
+        public DbSet<FileTagRelationship> FileTagRelationships { get; set; }
         public DbSet<File> Files { get; set; }
 
         public DbSet<Tag> Tags { get; set; }

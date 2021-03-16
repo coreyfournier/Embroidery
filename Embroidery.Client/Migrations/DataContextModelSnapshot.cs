@@ -14,7 +14,7 @@ namespace Embroidery.Client.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.2");
+                .HasAnnotation("ProductVersion", "5.0.4");
 
             modelBuilder.Entity("Embroidery.Client.Models.File", b =>
                 {
@@ -34,12 +34,10 @@ namespace Embroidery.Client.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Extension")
-                        .IsRequired()
                         .HasMaxLength(4)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FileHash")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
@@ -94,6 +92,21 @@ namespace Embroidery.Client.Migrations
                     b.ToTable("Files");
                 });
 
+            modelBuilder.Entity("Embroidery.Client.Models.FileTagRelationship", b =>
+                {
+                    b.Property<int>("TagId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FileId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TagId", "FileId");
+
+                    b.HasIndex("FileId");
+
+                    b.ToTable("FileTagRelationship");
+                });
+
             modelBuilder.Entity("Embroidery.Client.Models.Folder", b =>
                 {
                     b.Property<int>("Id")
@@ -134,7 +147,6 @@ namespace Embroidery.Client.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
@@ -163,9 +175,6 @@ namespace Embroidery.Client.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("FileId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("FolderId")
                         .HasColumnType("INTEGER");
 
@@ -179,8 +188,6 @@ namespace Embroidery.Client.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileId");
-
                     b.HasIndex("FolderId");
 
                     b.ToTable("Tags");
@@ -189,7 +196,6 @@ namespace Embroidery.Client.Migrations
             modelBuilder.Entity("Embroidery.Client.Models.View.GroupedFile", b =>
                 {
                     b.Property<string>("CleanName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("FirstFileId")
@@ -204,14 +210,12 @@ namespace Embroidery.Client.Migrations
             modelBuilder.Entity("Embroidery.Client.Models.View.SimpleFile", b =>
                 {
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Path")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.ToTable("SimpleFile", t => t.ExcludeFromMigrations());
@@ -228,12 +232,27 @@ namespace Embroidery.Client.Migrations
                     b.Navigation("Folder");
                 });
 
+            modelBuilder.Entity("Embroidery.Client.Models.FileTagRelationship", b =>
+                {
+                    b.HasOne("Embroidery.Client.Models.File", "File")
+                        .WithMany("Tags")
+                        .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Embroidery.Client.Models.Tag", "Tag")
+                        .WithMany("Files")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("Embroidery.Client.Models.Tag", b =>
                 {
-                    b.HasOne("Embroidery.Client.Models.File", null)
-                        .WithMany("Tags")
-                        .HasForeignKey("FileId");
-
                     b.HasOne("Embroidery.Client.Models.Folder", null)
                         .WithMany("Tags")
                         .HasForeignKey("FolderId");
@@ -249,6 +268,11 @@ namespace Embroidery.Client.Migrations
                     b.Navigation("Files");
 
                     b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("Embroidery.Client.Models.Tag", b =>
+                {
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }

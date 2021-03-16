@@ -13,6 +13,8 @@ namespace Embroidery.Client.Models
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public List<FileTagRelationship> Files { get; set; }
+
         [MaxLength(20), Required]
         public string Name { get; set; } = "";
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Embroidery.Client.IO
@@ -97,27 +98,7 @@ namespace Embroidery.Client.IO
                             if (fileHandler != null)
                                 fileHandler.StatusChange($"Converted {foundFile} to jpg");
 
-                            var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(foundFile));
-
-                            //Add any new tags, and then add them to the lookup table
-                            foreach (var tag in foundTags)
-                            {
-                                if (token.IsCancellationRequested)
-                                    return;
-                                if (!tagNameLookup.ContainsKey(tag))
-                                {
-                                    var newTag = new Tag()
-                                    {
-                                        CreatedDate = DateTime.Now,
-                                        Name = tag,
-                                        //Nullable doesn't work
-                                        UpdatedDate = DateTime.MinValue
-                                    };
-                                    db.Tags.Add(newTag);
-                                    db.SaveChanges();
-                                    tagNameLookup.Add(tag, newTag.Id);
-                                }
-                            }
+                            var associations = AddAndAssocitateTags(foundFile, db, token, tagNameLookup);
 
                             if (fileHandler != null)
                                 fileHandler.StatusChange($"Done finding tags");
@@ -151,7 +132,13 @@ namespace Embroidery.Client.IO
                             System.IO.File.Delete(imageFile);
                             //System.Diagnostics.Debug.Write($"Saving '{foundFile}'");
                             db.SaveChanges();
-                            
+
+                            foreach (var item in associations)
+                                item.FileId = newFile.Id;
+
+                            db.FileTagRelationships.AddRange(associations);
+                            db.SaveChanges();
+
                             if (fileHandler != null)
                                 fileHandler.NewFileInDatabase(newFile);
                             //AddFileToList(fileList, newFile);
@@ -161,8 +148,39 @@ namespace Embroidery.Client.IO
 
             });
 
-
             task.Start();
+        }
+
+        private IEnumerable<FileTagRelationship> AddAndAssocitateTags(string foundFile, DataContext db, CancellationToken token, Dictionary<string, int> tagNameLookup)
+        {
+            var foundTags = TokenizeName(System.IO.Path.GetFileNameWithoutExtension(foundFile));
+            List<FileTagRelationship> relationships = new List<FileTagRelationship>();            
+
+            //Add any new tags, and then add them to the lookup table
+            foreach (var tag in foundTags)
+            {
+                if (token.IsCancellationRequested)
+                    return new FileTagRelationship[] { };
+
+                if (!tagNameLookup.ContainsKey(tag))
+                {
+                    var newTag = new Tag()
+                    {
+                        CreatedDate = DateTime.Now,
+                        Name = tag,
+                        //Nullable doesn't work
+                        UpdatedDate = DateTime.MinValue
+                    };
+                    db.Tags.Add(newTag);
+                    db.SaveChanges();
+                    tagNameLookup.Add(tag, newTag.Id);
+                }
+                relationships.Add(new FileTagRelationship() { 
+                    TagId = tagNameLookup[tag]
+                });
+            }
+
+            return relationships;
         }
 
         private void AddFileToList(ObservableCollection<Models.View.GroupedFile> fileList, Models.File newFile)
@@ -194,8 +212,6 @@ namespace Embroidery.Client.IO
         ///<exception cref="ImageMagickNotFoundException"></exception>
         public static void PesToTargetFile(string pesFile, string targetFile)
         {
-            var targetPath = System.IO.Path.GetDirectoryName(targetFile);
-
             //System.Diagnostics.Debug.WriteLine($"Converting {pesFile}");
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -208,6 +224,7 @@ namespace Embroidery.Client.IO
             //-trim +repage -depth 4 -compress RLE -type palette BMP3:
             startInfo.Arguments = $"convert \"{pesFile}\" \"{targetFile}\"";
             process.StartInfo = startInfo;
+
             try
             {
                 process.Start();
@@ -224,6 +241,11 @@ namespace Embroidery.Client.IO
             process.WaitForExit();
         }
 
+        /// <summary>
+        /// Tokenizes the name and returns a distinct list of values
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public static string[] TokenizeName(string fileName)
         {
             StringBuilder sb = new StringBuilder();
@@ -252,8 +274,7 @@ namespace Embroidery.Client.IO
             System.Diagnostics.Debug.WriteLine($"'{fileName}'");
 
             for (int i = 0; i < charArray.Length; i++)
-            {
-                
+            {                
                 if (i != 0)
                 {
                     //If the letter is upper case, but don't have a space before the word, then we captured a whole word
@@ -292,7 +313,9 @@ namespace Embroidery.Client.IO
             if (list.Any(x => x == "" || x == " "))
                 System.Diagnostics.Debug.Assert(list.Any(x => x == "" || x == " "));
 
-            return list.ToArray();
+            return list
+                .Distinct()
+                .ToArray();
         }
 
         /// <summary>

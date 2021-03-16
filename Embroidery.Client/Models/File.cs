@@ -102,7 +102,7 @@ namespace Embroidery.Client.Models
 
         public DateTime? UpdatedDate { get; set; }
 
-        public List<Tag>? Tags { get; set; }
+        public List<FileTagRelationship>? Tags { get; set; }
 
         public byte[]? ImageThumbnail { get; set; }
 
