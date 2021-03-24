@@ -9,11 +9,10 @@
 	<UserControl.Resources>
 		<utils:BitmapConverter x:Key="bitMapFromDb"/>
 	</UserControl.Resources>
-	<Grid Grid.Row="0" Grid.Column="0">
+	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="75" />
 			<ColumnDefinition Width="Auto" MinWidth="300"/>
-			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="76"/>
@@ -26,6 +25,7 @@
 			Width="75"
 			Height="75"
 			Source="{Binding, Converter={StaticResource bitMapFromDb}}"/>
+		
 		<TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CleanName}" Classes="Caption"  VerticalAlignment="Top"></TextBlock>
 		<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding TotalLikeFiles}" Classes="Caption"  VerticalAlignment="Top"></TextBlock>
 	</Grid>

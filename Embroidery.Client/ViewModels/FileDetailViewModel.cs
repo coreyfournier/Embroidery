@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
+using Embroidery.Client.Models;
 
 namespace Embroidery.Client.ViewModels
 {
@@ -13,11 +14,13 @@ namespace Embroidery.Client.ViewModels
     {
         public FileDetailViewModel(GroupedFile file)
         {
-            Item = file;            
+            GroupedFile = file;            
         }
 
-        public GroupedFile Item { get; set; }
+        public GroupedFile GroupedFile { get; set; }
 
-        public ObservableCollection<SimpleFile> Files { get; set; }
+        public IEnumerable<SimpleFile> SimpleFiles { get; set; }
+
+        public IEnumerable<Tag> Tags { get; set; }
     }
 }

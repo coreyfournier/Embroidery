@@ -37,7 +37,7 @@
 			<TextBox Watermark="Search - * for all" KeyUp="SearchTextKeyUp" />
 		</Border>
 		<Border Classes="Card" Grid.Column="0" Grid.Row="2">
-			<views:FileListView Name="FileListView" Content="{Binding FileList}"  VerticalAlignment="Stretch"></views:FileListView>
+			<views:FileListView Name="FileListView" Content="{Binding FileList}" ItemSelected="FileListItemSelected" VerticalAlignment="Stretch"></views:FileListView>
 		</Border>
 		<Border Classes="Card" Grid.Row="2"  Grid.Column="1">
 			<views:FileDetailView Name="FileDetail"								  

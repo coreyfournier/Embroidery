@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Embroidery.Client.Models.View;
 
 namespace Embroidery.Client.Views
 {
@@ -43,6 +44,39 @@ namespace Embroidery.Client.Views
             base.OnClosing(e);          
         }
 
+        public void FileListItemSelected(object sender, GroupedFileEventArgs args)
+        {
+            System.Diagnostics.Debug.WriteLine($"Clicked {args.GroupedFile.CleanName}");
+
+            //Find the file detail view by name
+            var control = this.FindControl<FileDetailView>("FileDetail");
+
+            using (var db = new DataContext())
+            {
+                var simpleFiles = db.SimpleFiles
+                    .FromSqlInterpolated(@$"SELECT 
+                        Files.Id,
+                     [FullName],
+                     Path
+                    FROM 
+                     [Files]
+                    INNER JOIN Folders ON Folders.Id = FolderId
+                    WHERE
+                     CleanName = {args.GroupedFile.CleanName}");
+
+                control.DataContext = new Models.View.FileDetail()
+                {
+                    GroupedFile = args.GroupedFile,
+                    SimpleFiles = simpleFiles.ToArray(),
+                    Tags = db.FileTagRelationships
+                        .Where(x => x.FileId == args.GroupedFile.FirstFileId)
+                        .Select(x => x.Tag)
+                        .OrderBy(x => x.Name)
+                        .ToArray()
+                };
+            }
+        }
+
         public void SearchTextKeyUp(object sender, KeyEventArgs args)
         { 
             var textBox = sender as TextBox;
@@ -55,42 +89,6 @@ namespace Embroidery.Client.Views
                 {
                     viewModel.ExecuteSearch(textBox.Text);
                     searchText = textBox.Text;
-                }
-            }
-        }
-
-        public void RowClicked(object sender, SelectionChangedEventArgs e)
-        {
-            //Find the file detail view by name
-            var control = this.FindControl<FileDetailView>("FileDetail");
-
-            if (e.AddedItems.Count > 0)
-            {
-                var groupedFile = e.AddedItems[0] as Models.View.GroupedFile;
-
-                if (groupedFile != null)
-                {
-                    using (var db = new DataContext())
-                    {
-                        var simpleFiles = db.SimpleFiles
-                            .FromSqlInterpolated(@$"SELECT 
-                                Files.Id,
-	                            [FullName],
-	                            Path
-                            FROM 
-	                            [Files]
-                            INNER JOIN Folders ON Folders.Id = FolderId
-
-                            WHERE
-	                            CleanName = {groupedFile.CleanName}");
-
-                        control.DataContext = new Models.View.FileDetail()
-                        {
-                            GroupedFile = groupedFile,
-                            SimpleFiles = simpleFiles.ToArray()
-                        };
-                    }
-                    System.Diagnostics.Debug.WriteLine($"Clicked {groupedFile.CleanName}");
                 }
             }
         }        

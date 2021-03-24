@@ -11,5 +11,7 @@ namespace Embroidery.Client.Models.View
         public GroupedFile GroupedFile { get; set; }
 
         public IEnumerable<SimpleFile> SimpleFiles { get; set; }
+
+        public IEnumerable<Tag> Tags { get; set; }
     }
 }

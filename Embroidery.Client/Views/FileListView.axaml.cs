@@ -1,14 +1,29 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Selection;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Embroidery.Client.Models.View;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 
 namespace Embroidery.Client.Views
 {
     public class FileListView : UserControl
     {
+        public static readonly RoutedEvent<GroupedFileEventArgs> ItemSelectedEvent =
+            RoutedEvent.Register<GroupedFileEventArgs>(nameof(ItemSelected), 
+                RoutingStrategies.Bubble,
+                typeof(GroupedFileEventArgs));
+
+        // Provide CLR accessors for the event
+        public event EventHandler<GroupedFileEventArgs> ItemSelected
+        {
+            add => AddHandler(ItemSelectedEvent, value);
+            remove => RemoveHandler(ItemSelectedEvent, value);
+        }
+
         public FileListView()
         {
             InitializeComponent();
@@ -20,36 +35,20 @@ namespace Embroidery.Client.Views
         }
 
         public void RowClicked(object sender, SelectionChangedEventArgs e)
-        {
-            //Find the file detail view by name
-            var control = this.Parent.Parent.Parent.FindControl<FileDetailView>("FileDetail");
-
+        {         
             if (e.AddedItems.Count > 0)
             {
                 var groupedFile = e.AddedItems[0] as Models.View.GroupedFile;
 
                 if (groupedFile != null)
-                {
-                    using (var db = new DataContext())
-                    {
-                        var simpleFiles = db.SimpleFiles
-                            .FromSqlInterpolated(@$"SELECT 
-                                Files.Id,
-	                            [FullName],
-	                            Path
-                            FROM 
-	                            [Files]
-                            INNER JOIN Folders ON Folders.Id = FolderId
-                            WHERE
-	                            CleanName = {groupedFile.CleanName}");
-
-                        control.DataContext = new Models.View.FileDetail()
-                        {
-                            GroupedFile = groupedFile,
-                            SimpleFiles = simpleFiles.ToArray()
-                        };
-                    }
-                    System.Diagnostics.Debug.WriteLine($"Clicked {groupedFile.CleanName}");
+                {                    
+                    RaiseEvent(new GroupedFileEventArgs() { 
+                        GroupedFile = groupedFile,
+                        //Denotes which event to raise
+                        RoutedEvent = ItemSelectedEvent,
+                        Source = e.Source,
+                        Route = e.Route
+                    });
                 }
             }      
         }
