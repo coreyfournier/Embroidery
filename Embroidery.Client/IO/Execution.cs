@@ -278,7 +278,8 @@ namespace Embroidery.Client.IO
                 if (i != 0)
                 {
                     //If the letter is upper case, but don't have a space before the word, then we captured a whole word
-                    if (Char.IsUpper(charArray[i]) && charArray[i-1] != ' ')
+                    // Don't capture a bunch of upper case letters back to back
+                    if (Char.IsUpper(charArray[i]) && charArray[i-1] != ' ' && !Char.IsUpper(charArray[i - 1]))
                     {
                         list.Add(sb.ToString());
                         sb.Clear();
