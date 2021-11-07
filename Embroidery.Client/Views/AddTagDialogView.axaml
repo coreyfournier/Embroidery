@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+		Height="400" Width="600"
+        x:Class="Embroidery.Client.Views.AddTagDialogView"
+        Title="Add Tag">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="200"/>
+			<ColumnDefinition Width="75"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="0" Grid.Column="0" Content="Embroidery Folder" VerticalContentAlignment="Center"/>
+		<TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SearchPath}" Watermark="Choose Folder" IsReadOnly="true"></TextBox>
+		<Button Grid.Row="0" Grid.Column="3" Command="{Binding BrowseClick}" Content="Browse"></Button>
+
+		<WrapPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" HorizontalAlignment="Right">
+			<Button Command="{Binding SaveClick}" Width="75" Margin="2" Content="Save"></Button>
+			<Button Command="{Binding CloseClick}" Width="75" Margin="2" Content="Close"></Button>
+		</WrapPanel>
+	</Grid>
+	
+</Window>

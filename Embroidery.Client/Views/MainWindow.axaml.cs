@@ -51,7 +51,7 @@ namespace Embroidery.Client.Views
             //Find the file detail view by name
             var control = this.FindControl<FileDetailView>("FileDetail");
 
-            control.DataContext = new Models.View.FileDetail(args.GroupedFile);
+            control.DataContext = new Models.View.FileDetail(args.GroupedFile, this);
         }
 
         public void SearchTextKeyUp(object sender, KeyEventArgs args)

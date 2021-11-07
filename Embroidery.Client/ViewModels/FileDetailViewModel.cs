@@ -29,6 +29,7 @@ namespace Embroidery.Client.ViewModels
 
         public ReactiveCommand<Tag, Unit> Add { get; }
 
+
         public void Dispose()
         {
             

@@ -32,7 +32,7 @@
 						</ContextMenu>
 					</ListBox.ContextMenu>			
 				</ListBox>
-				<Button Name="AddTag" Content="Add Tag" Click="AddTagClick" IsEnabled="False" > </Button>
+				<Button Name="AddTag" Content="Add Tag" Command="{Binding ShowAddTags}" IsEnabled="False" > </Button>
 			</StackPanel>
 			<DataGrid Name="RelatedFilesDataGrid" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
 					  Items="{Binding SimpleFiles}"

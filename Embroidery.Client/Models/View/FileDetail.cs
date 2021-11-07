@@ -1,4 +1,5 @@
 ﻿using Embroidery.Client.ViewModels;
+using Embroidery.Client.Views;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 using System;
@@ -15,11 +16,18 @@ namespace Embroidery.Client.Models.View
     public class FileDetail : ViewModelBase, INotifyPropertyChanged, IObservable<bool>, IDisposable
     {
         GroupedFile _groupedFile;
-        public FileDetail(GroupedFile groupedFile)
+        public FileDetail(GroupedFile groupedFile, Avalonia.Controls.Window owner)
         {
             _groupedFile = groupedFile;
             
             LoadTags();
+
+            ShowAddTags = ReactiveCommand.Create(() => {
+                Views.AddTagDialogView dialog = new Views.AddTagDialogView();
+                //View model goes here for a tag if I am going to use one.
+                //dialog.DataContext = new AddTagDialogView(dialog);
+                dialog.ShowDialog(owner);
+            });
         }
 
         private void LoadTags()
@@ -48,6 +56,9 @@ namespace Embroidery.Client.Models.View
             }
         }
 
+
+        public ReactiveCommand<Unit, Unit> ShowAddTags { get; private set; }
+
         public GroupedFile GroupedFile { get; set; }
 
         public IEnumerable<SimpleFile> SimpleFiles { get; set; }
@@ -58,6 +69,7 @@ namespace Embroidery.Client.Models.View
         public void AddTag()
         {
             System.Diagnostics.Debug.WriteLine($"{nameof(AddTag)} to '{GroupedFile.CleanName}'");
+            
         }
 
         public void RemoveTag(Tag tag)

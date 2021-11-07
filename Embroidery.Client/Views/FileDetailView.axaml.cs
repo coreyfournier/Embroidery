@@ -69,7 +69,6 @@ namespace Embroidery.Client.Views
 
         public void AddTagClick(object sender, RoutedEventArgs e)
         {
-            //var item = (Avalonia.Controls.Button)sender;
             ((FileDetail)this.DataContext).AddTag();
         }
 
