@@ -35,6 +35,9 @@
     <Compile Update="Views\FileListView.axaml.cs">
       <DependentUpon>FileListView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\FileTagDialogView.axaml.cs">
+      <DependentUpon>FileTagDialogView.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\SettingsDialogView.axaml.cs">
       <DependentUpon>SettingsDialogView.axaml</DependentUpon>
     </Compile>

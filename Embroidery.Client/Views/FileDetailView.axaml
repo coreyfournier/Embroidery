@@ -24,8 +24,17 @@
 				   Height="350" Width="350"
 				   HorizontalAlignment="Stretch"
 				   VerticalAlignment="Stretch"/>
-			<ListBox Grid.Column="2" Grid.Row="0" Items="{Binding Tags}"/>
-			<DataGrid Name="RelatedFilesDataGrid" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
+			<StackPanel Grid.Column="2" Grid.Row="0">
+				<ListBox Items="{Binding Tags}">
+					<ListBox.ContextMenu>
+						<ContextMenu>
+							<MenuItem Header="Remove" Tapped="RemoveTag"/>						
+						</ContextMenu>
+					</ListBox.ContextMenu>			
+				</ListBox>
+				<Button Name="AddTag" Content="Add Tag" Click="AddTagClick" IsEnabled="False" > </Button>
+			</StackPanel>
+			<DataGrid Name="RelatedFilesDataGrid" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
 					  Items="{Binding SimpleFiles}"
 					  SelectionChanged="DataGridSelectionChanged"
 					  DoubleTapped="DataGridDoubleTap"
